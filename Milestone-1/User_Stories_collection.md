@@ -77,3 +77,44 @@
 ### As a Support Agent,
 - I want to sort the tickets by date created,
 - So that I can address older tickets first and provide faster resolution to students
+
+### As a manager,
+- I want to receive a notification when a ticket hasn’t been answered by a support agent within 72 hours,
+- So that I can follow up on the status of the ticket with my support agents to provide effective and timely resolution to the students 
+
+### As a Manager,
+- I want to receive a notification whenever a support agent’s average resolution time in the last 30 days is greater than 48 hours
+- So that I can address the agent and find a solution to the delayed response times
+
+
+### As a Manager, 
+- I want to receive a notification whenever a support agent’s average rating in the past 30 days is lower than X 
+- So that I can address the agent and find a solution for the low ratings
+
+### As a Student,
+- I want to be able to reopen a ticket that’s marked as closed,
+- So that I can receive further support incase i’m not happy with the resolution
+
+### As a support staff, 
+- I want the ability to flag a post as rude/offensive as per my discretion 
+- so that they do not disturb the learning environment.
+
+### As a support staff, 
+- I want the ability to forward previously flagged offensive posts to the admin, 
+- so that they can take further action as deemed appropriate.
+
+### As an admin, 
+- I want to be able to remove a particular user by their username 
+- so that if any student drops the degree programme or has disciplinary issues, we can revoke access to the platform.
+
+### As an admin, 
+- I want the ability to add and assign roles to multiple users by simply listing their email IDs 
+- so that I don’t have to manually add them one after another.
+
+### As a manager, 
+- I want to be able to get the resolution times of queries 
+- so that I can perform an analysis to understand the promptness of the query resolution process.
+
+### As a manager, 
+- I want to be able to get the number of times issues have been reopened along with the responding support team member for the original query, 
+- so that I can perform some analysis on the quality of the query resolution.
