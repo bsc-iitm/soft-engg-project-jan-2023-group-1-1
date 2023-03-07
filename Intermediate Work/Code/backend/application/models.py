@@ -16,7 +16,7 @@ class User(db.Model):
     #name=db.Column(db.String(100),nullable=False)
     password=db.Column(db.String(100),unique=True,nullable=False)
     email_id=db.Column(db.String(100),unique=True,nullable=False)
-    role_id=db.Column(db.Integer,nullable=False)
+    role_id=db.Column(db.Integer,nullable=False) #Role ID for students is 1, for Support Agents is 2, Admins is 3, Manager is 4.
 
     
 class Student(db.Model):
