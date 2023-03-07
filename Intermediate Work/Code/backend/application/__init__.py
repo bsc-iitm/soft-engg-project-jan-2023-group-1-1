@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_restful import Api
 from flask_cors import CORS
 from application.config import LocalDevelopmentConfig
 from application.models import db
@@ -7,7 +8,7 @@ from application.models import db
 # from flask_caching import Cache
 
 app = None
-# api = None
+api = None
 # celery = None
 # cache = None
 
@@ -19,8 +20,8 @@ def create_app():
     app.logger.info("App setup complete")
     db.create_all()  
     app.app_context().push() 
-    # api = Api(app)
-    # app.app_context().push() 
+    api = Api(app)
+    app.app_context().push() 
     CORS(app, resources={r'/*':{'origins':'*'}}) 
     app.app_context().push()    
     # create celery
@@ -36,7 +37,7 @@ def create_app():
     # cache.clear()
     # app.app_context().push() 
 
-    return app
+    return app,api
 
-app = create_app()
+app,api = create_app()
     
