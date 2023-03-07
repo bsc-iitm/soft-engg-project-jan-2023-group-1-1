@@ -7,6 +7,7 @@ class Config():
     SQLALCHEMY_DATABASE_URI = None
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     WTF_CSRF_ENABLED = False
+    SECRET_KEY= "ash ah secet"
     SECURITY_TOKEN_AUTHENTICATION_HEADER = "Authentication-Token"
     CELERY_BROKER_URL = "redis://localhost:6379/1"
     CELERY_RESULT_BACKEND = "redis://localhost:6379/2"

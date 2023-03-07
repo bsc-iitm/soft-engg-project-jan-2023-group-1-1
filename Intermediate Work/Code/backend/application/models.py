@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 import functools
 from flask import request, jsonify
 import jwt
-
+from .config import Config
 engine = None
 Base = declarative_base()
 db = SQLAlchemy()
@@ -47,7 +47,7 @@ class Ticket(db.Model):
     is_offensive=db.Column(db.Boolean,nullable=False)
     is_FAQ=db.Column(db.Boolean,nullable=False)
     
-def authtoken_required(function):
+def token_required(function):
 	@functools.wraps(function)
 	def loggedin(*args,**kwargs):
 		auth_token=None
@@ -58,11 +58,11 @@ def authtoken_required(function):
 			return jsonify({"status":'unsuccessful, missing the authtoken'})
 		
 		try: 
-			output = jwt.decode(auth_token,app.config['SECRET_KEY'])
+			output = jwt.decode(auth_token,Config.SECRET_KEY,algorithms=["HS256"])
 			#print(output)
 			user = User.query.filter_by(user_id = output["user_id"]).first()
 		except:
 			return jsonify({"status":"failure, your token details do not match"})
 		
-		return function(*args,user.user_id,**kwargs)
+		return function(user,*args,**kwargs)
 	return loggedin
