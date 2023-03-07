@@ -7,15 +7,17 @@ from .config import Config
 engine = None
 Base = declarative_base()
 db = SQLAlchemy()
+from datetime import datetime
 
 class User(db.Model):
-    # __tablename__ = 'user'
+    __tablename__='user'
     user_id=db.Column(db.Integer,primary_key=True,autoincrement=True)
     user_name=db.Column(db.String(100),unique=True,nullable=False)
-    name=db.Column(db.String(100),nullable=False)
+    #name=db.Column(db.String(100),nullable=False)
     password=db.Column(db.String(100),unique=True,nullable=False)
     email_id=db.Column(db.String(100),unique=True,nullable=False)
     role_id=db.Column(db.Integer,nullable=False)
+
     
 class Student(db.Model):
     user_id=db.Column(db.Integer, db.ForeignKey('user.user_id'),primary_key=True)
@@ -25,7 +27,6 @@ class Support_Agent(db.Model):
     user_id=db.Column(db.Integer, db.ForeignKey('user.user_id'),primary_key=True)
     agent_id=db.Column(db.String(100),nullable=False,primary_key=True)
 
-    
 class Admin(db.Model):
     user_id=db.Column(db.Integer, db.ForeignKey('user.user_id'),primary_key=True)
     admin_id=db.Column(db.String(100),nullable=False,primary_key=True)
@@ -34,18 +35,27 @@ class Manager(db.Model):
     user_id=db.Column(db.Integer, db.ForeignKey('user.user_id'),primary_key=True)
     manager_id=db.Column(db.String(100),nullable=False,primary_key=True)
 
+
+class Response(db.Model):
+    response_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    ticket_id = db.Column(db.Integer, db.ForeignKey('ticket.ticket_id'))
+    response = db.Column(db.String(200), nullable=False) 
+    responder_id = db.Column(db.Integer, db.ForeignKey('user.user_id'))
+    response_timestamp = db.Column(db.DateTime, nullable=False, default=datetime.utcnow())
+    parent_list = db.relationship('Ticket',back_populates='responses', lazy='subquery')
+
 class Ticket(db.Model):
     ticket_id=db.Column(db.Integer,primary_key=True,autoincrement=True)
     title=db.Column(db.String(100),nullable=False)
     description=db.Column(db.String(100),nullable=False)
-    creation_date=db.Column(db.DateTime,nullable=False)
+    creation_date=db.Column(db.DateTime,nullable=False, default=datetime.utcnow())
     creator_id=db.Column(db.Integer, db.ForeignKey('user.user_id'))
-    responder_id=db.Column(db.Integer, db.ForeignKey('user.user_id'))
     number_of_upvotes=db.Column(db.Integer,default=0)
     is_read=db.Column(db.Boolean,nullable=False)
     is_open=db.Column(db.Boolean,nullable=False)
     is_offensive=db.Column(db.Boolean,nullable=False)
     is_FAQ=db.Column(db.Boolean,nullable=False)
+    responses = db.relationship('Response', back_populates='parent_list', lazy='subquery')
     
 def token_required(function):
 	@functools.wraps(function)
