@@ -133,5 +133,83 @@ class TicketAPI(Resource):
             return 200, "OK"
         else:
             abort(400, 'No such ticket_id exists for the user')
-                
-    
+
+import secrets,string    
+from random_username.generate import generate_username   
+
+class UserAPI(Resource):
+    @token_required
+    def get(user,self):
+        if(user.role_id==3):
+            user=User.query.all()
+            result=[]
+            for user in user:
+                if(user.role_id==1 or user.role_id==2):
+                    d={}
+                    d['user_id']=user.user_id
+                    d['user_name']=user.user_name
+                    d['email_id']=user.email_id
+                    d['role_id']=user.role_id
+                    result.append(d)
+            return jsonify(result)
+        else:
+            abort(403,message="You are not authorized to view this page")
+    @token_required
+    def post(user,self):
+        if(user.role_id==3):
+            data=request.get_json()
+            secure_str = ''.join((secrets.choice(string.ascii_letters) for i in range(8)))
+            user_name=generate_username(1)[0]
+            user=User(user_name=user_name,email_id=data['email_id'],password=secure_str,role_id=data['role_id'])
+            db.session.add(user)
+            db.session.commit()
+            return jsonify({'message':'User created successfully'})
+        else:
+            abort(403,message="You are not authorized to view this page")
+    @token_required
+    def delete(user, self):
+        try:
+            user_id = int(request.get_json()['user_id'])
+        except:
+            abort(400, 'user_id must exist and should be integer')
+        current_user = User.query.filter(User.user_id==user_id).first()
+        if current_user:
+            db.session.delete(current_user)
+            db.session.commit()
+            return 200, "OK"
+        else:
+            abort(400, 'No such user_id exists')
+    @token_required
+    def patch(user,self):
+        args=request.get_json(force=True)
+        user_id=None
+        current_user=None
+        try:
+            user_id=int(args['user_id'])
+        except:
+            abort(400,message="user_id must exist and should be integer")
+        try:
+            current_user=User.query.filter(User.user_id==user_id).first()
+        except:
+            abort(400,message="No such user_id exists")
+        user_name=None
+        try:
+            user_name=args['user_name']
+            current_user.user_name=user_name
+        except:
+            pass
+        try:
+            password=args['password']
+            current_user.password=password
+        except:
+            pass
+        try:
+            email_id=args['email_id']
+            if(user.role_id==3):
+                current_user.email_id=email_id
+            else:
+                abort(403,message="You are can't edit email")
+        except:
+            pass
+        db.session.commit()
+        return jsonify({'message':'User updated successfully'})
