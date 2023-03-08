@@ -274,18 +274,57 @@ class FAQApi(Resource):
             except:
                 abort(400, message="is_approved is required and should be boolean")
 
+            if not db.session.query(Ticket).filter(Ticket.ticket_id==tid).first():
+                abort(400, message="ticket_id does not exist")
+
+            if db.session.query(Category).filter(Category.category==cat).first() is None:
+                abort(400, message="category does not exist")
+
+            if not isinstance(is_app, bool):
+                abort(400, message="is_approved must be boolean")
+
+            newFAQ = FAQ(ticket_id = tid, category=cat, is_approved=is_app)
+            db.session.add(newFAQ)
+            db.session.commit()  
+
+            return jsonify({'message': "FAQ added successfully"})               
+
+        else:
+            abort(403, message="Unauthorized")
+    
+    @token_required
+    def patch(user, self):
+        if user.role_id==3:
+            data = request.get_json()
+            try:
+                tid = int(data['ticket_id'])
+            except:
+                abort(400, message="ticket_id is required and should be integer")
+            try:
+                cat = data['category']
+            except:
+                abort(400, message="category is required and should be string")
+            try:
+                is_app = data['is_approved']
+            except:
+                abort(400, message="is_approved is required and should be boolean")
+
+            if not db.session.query(Ticket).filter(Ticket.ticket_id==tid).first():
+                abort(400, message="ticket_id does not exist")
+
             if db.session.query(Category).filter(Category.category==cat).first() is None:
                 abort(400, message="category does not exist")
 
             if not isinstance(is_app, bool):
                 abort(400, message="is_approved must be boolean")
             
-            if not db.session.query(Ticket).filter(Ticket.ticket_id==tid).first():
-                abort(400, message="ticket_id does not exist")
-
-            newFAQ = FAQ(ticket_id = tid, category=cat, is_approved=is_app)
-            db.session.add(newFAQ)
-            db.session.commit()                 
-
+            current_ticket=db.session.query(FAQ).filter(FAQ.ticket_id==tid).first()
+            if current_ticket:
+                current_ticket.category = cat
+                current_ticket.is_approved = is_app
+                db.session.commit()
+                return jsonify({'message': "FAQ updated successfully"})
+            else:
+                abort(400, message="ticket_id is not in FAQ")
         else:
             abort(403, message="Unauthorized")
