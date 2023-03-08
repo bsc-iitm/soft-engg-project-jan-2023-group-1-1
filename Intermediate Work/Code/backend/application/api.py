@@ -1,8 +1,9 @@
-from flask_restful import Resource, request,abort
+from flask_restful import Resource, request, abort
 from flask import jsonify
 from datetime import datetime
 from dateutil import tz, parser
-from application.models import User, Student, Admin, Manager, Response, Ticket,db,token_required
+from application.models import User, Student, Admin, Manager, Response, Ticket
+from application.models import token_required, db
 class TicketAPI(Resource):
     @token_required
     def get(user,self):
