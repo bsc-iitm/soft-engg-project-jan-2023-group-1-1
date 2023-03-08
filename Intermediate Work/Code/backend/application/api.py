@@ -2,7 +2,7 @@ from flask_restful import Resource, request, abort
 from flask import jsonify
 from datetime import datetime
 from dateutil import tz, parser
-from application.models import User, Student, Admin, Manager, Response, Ticket, FAQ
+from application.models import User, Student, Admin, Manager, Response, Ticket, FAQ, Category
 from application.models import token_required, db
 
 class TicketAPI(Resource):
@@ -132,7 +132,7 @@ class TicketAPI(Resource):
             db.session.commit()
             return 200, "OK"
         else:
-            abort(400, 'No such ticket_id exists for the user')
+            abort(400, message='No such ticket_id exists for the user')
 
 import secrets,string    
 from random_username.generate import generate_username   
@@ -256,3 +256,36 @@ class FAQApi(Resource):
             # return jsonify(result)
         else:
             abort(403, 'Unauthorized')
+
+    @token_required
+    def post(user, self):
+        if user.role_id == 3:
+            data = request.get_json()
+            try:
+                tid = int(data['ticket_id'])
+            except:
+                abort(400, message="ticket_id is required and should be integer")
+            try:
+                cat = data['category']
+            except:
+                abort(400, message="category is required and should be string")
+            try:
+                is_app = data['is_approved']
+            except:
+                abort(400, message="is_approved is required and should be boolean")
+
+            if db.session.query(Category).filter(Category.category==cat).first() is None:
+                abort(400, message="category does not exist")
+
+            if not isinstance(is_app, bool):
+                abort(400, message="is_approved must be boolean")
+            
+            if not db.session.query(Ticket).filter(Ticket.ticket_id==tid).first():
+                abort(400, message="ticket_id does not exist")
+
+            newFAQ = FAQ(ticket_id = tid, category=cat, is_approved=is_app)
+            db.session.add(newFAQ)
+            db.session.commit()                 
+
+        else:
+            abort(403, message="Unauthorized")
