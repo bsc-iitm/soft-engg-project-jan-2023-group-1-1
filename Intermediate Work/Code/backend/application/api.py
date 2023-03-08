@@ -21,8 +21,8 @@ class TicketAPI(Resource):
             a = None
             try:
                 a = int(args["ticket_id"])
-                print(a)
-                print(user.user_id)
+                #print(a)
+                #print(user.user_id)
             except:
                 abort(403, message = "Please mention the ticketId field in your form")
             ticket = None
