@@ -287,7 +287,7 @@ class FAQApi(Resource):
             db.session.add(newFAQ)
             db.session.commit()  
 
-            return jsonify({'message': "FAQ added successfully"})               
+            return jsonify({'message': "FAQ item added successfully"})               
 
         else:
             abort(403, message="Unauthorized")
@@ -323,7 +323,29 @@ class FAQApi(Resource):
                 current_ticket.category = cat
                 current_ticket.is_approved = is_app
                 db.session.commit()
-                return jsonify({'message': "FAQ updated successfully"})
+                return jsonify({'message': "FAQ item updated successfully"})
+            else:
+                abort(400, message="ticket_id is not in FAQ")
+        else:
+            abort(403, message="Unauthorized")
+    
+    @token_required
+    def delete(user, self):
+        if user.role_id==3:
+            data = request.get_json()
+            try:
+                tid = int(data['ticket_id'])
+            except:
+                abort(400, message="ticket_id is required and should be integer")
+            
+            if not db.session.query(Ticket).filter(Ticket.ticket_id==tid).first():
+                abort(400, message="ticket_id does not exist")
+            
+            current_ticket=db.session.query(FAQ).filter(FAQ.ticket_id==tid).first()
+            if current_ticket:
+                db.session.delete(current_ticket)
+                db.session.commit()
+                return jsonify({'message': "FAQ item deleted successfully"})
             else:
                 abort(400, message="ticket_id is not in FAQ")
         else:
