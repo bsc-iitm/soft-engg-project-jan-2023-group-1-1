@@ -18,7 +18,6 @@ class User(db.Model):
     email_id=db.Column(db.String(100),unique=True,nullable=False)
     role_id=db.Column(db.Integer,nullable=False) #Role ID for students is 1, for Support Agents is 2, Admins is 3, Manager is 4.
 
-    
 class Student(db.Model):
     user_id=db.Column(db.Integer, db.ForeignKey('user.user_id'),primary_key=True)
     roll_number=db.Column(db.String(100),nullable=False,primary_key=True)
@@ -34,7 +33,6 @@ class Admin(db.Model):
 class Manager(db.Model):
     user_id=db.Column(db.Integer, db.ForeignKey('user.user_id'),primary_key=True)
     manager_id=db.Column(db.String(100),nullable=False,primary_key=True)
-
 
 class Response(db.Model):
     response_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -56,7 +54,15 @@ class Ticket(db.Model):
     is_offensive=db.Column(db.Boolean,nullable=False)
     is_FAQ=db.Column(db.Boolean,nullable=False)
     responses = db.relationship('Response', back_populates='parent_list', lazy='subquery')
-    
+
+class Category(db.Model):
+    category = db.Column(db.String(50), primary_key=True)
+
+class FAQ(db.Model):
+    ticket_id = db.Column(db.Integer,db.ForeignKey('ticket.ticket_id'),primary_key=True,autoincrement=True)
+    cateogry = db.Column(db.String, db.ForeignKey('category.category'))
+    is_approved = db.Column(db.Boolean,nullable=False)
+
 def token_required(function):
 	@functools.wraps(function)
 	def loggedin(*args,**kwargs):
