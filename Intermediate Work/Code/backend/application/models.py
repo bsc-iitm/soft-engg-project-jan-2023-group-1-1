@@ -60,8 +60,9 @@ class Category(db.Model):
 
 class FAQ(db.Model):
     ticket_id = db.Column(db.Integer,db.ForeignKey('ticket.ticket_id'),primary_key=True,autoincrement=True)
-    cateogry = db.Column(db.String, db.ForeignKey('category.category'))
+    category = db.Column(db.String, db.ForeignKey('category.category'))
     is_approved = db.Column(db.Boolean,nullable=False)
+    ticket = db.relationship('Ticket', backref='faq')
 
 def token_required(function):
 	@functools.wraps(function)
