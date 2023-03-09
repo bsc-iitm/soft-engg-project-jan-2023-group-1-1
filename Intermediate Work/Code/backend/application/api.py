@@ -156,7 +156,7 @@ class UserAPI(Resource):
             abort(403,message="You are not authorized to view this page")
     @token_required
     def post(user,self):
-        if(user.role_id==3):
+        if(user.role_id==3 or user.role_id==4):
             data=request.get_json()
             secure_str = ''.join((secrets.choice(string.ascii_letters) for i in range(8)))
             user_name=generate_username(1)[0]
@@ -519,3 +519,27 @@ class ResponseAPI_by_response_id(Resource): #This class can be used if required.
                 return jsonify({"data": d, "status": "success"})
         else:
             return jsonify({"data": [], "status": "succcess"})
+
+class TicketAll(Resource):
+    @token_required
+    def get(user,self):
+        try:
+            ticket=Ticket.query.all()
+            result=[]
+            for t in ticket:
+                d={}
+                d['ticket_id']=t.ticket_id
+                d['title']=t.title
+                d['description']=t.description
+                d['creation_date']=str(t.creation_date)
+                d['creator_id']=t.creator_id
+                d['number_of_upvotes']=t.number_of_upvotes
+                d['is_read']=t.is_read
+                d['is_open']=t.is_open
+                d['is_offensive']=t.is_offensive
+                d['is_FAQ']=t.is_FAQ
+                d['rating']=t.rating
+                result.append(d)
+            return jsonify({"data":result,"status":"success"})
+        except:
+            abort(404,message="No tickets found")
