@@ -132,7 +132,6 @@ class TicketAPI(Resource):
             db.session.commit()
             return 200, "OK"
         else:
-<<<<<<< HEAD
             abort(400, message='No such ticket_id exists for the user')
 
 import secrets,string    
@@ -222,39 +221,39 @@ class FAQApi(Resource):
         if user.role_id==3:
             faq = db.session.query(FAQ).all()
             result = []
-            for q in faq:
-                d = {}
-                d['ticket_id'] = q.ticket_id
-                d['category'] = q.category
-                d['is_approved'] = q.is_approved
-                result.append(d)
-            return jsonify(result)
             # for q in faq:
             #     d = {}
             #     d['ticket_id'] = q.ticket_id
             #     d['category'] = q.category
             #     d['is_approved'] = q.is_approved
-            #     d['title'] = q.ticket.title
-            #     d['description'] = q.ticket.description
-            #     d['creation_date'] = q.ticket.creation_date
-            #     d['creator_id'] = q.ticket.creator_id
-            #     d['number_of_upvotes'] = q.ticket.number_of_upvotes
-            #     d['is_read'] = q.ticket.is_read
-            #     d['is_open'] = q.ticket.is_open
-            #     d['is_offensive'] = q.ticket.is_offensive
-            #     d['is_FAQ'] = q.ticket.is_FAQ
-            #     d['responses'] = []
-            #     responses = q.ticket.responses
-            #     if responses:
-            #         for response in responses:
-            #             d2 = {}
-            #             d2['response_id'] = response.response_id
-            #             d2['responder_id'] = response.responder_id
-            #             d2['response_timestamp'] = response.response_timestamp
-            #             d2['response'] = response.response
-            #             d['responses'].append(d2)
             #     result.append(d)
             # return jsonify(result)
+            for q in faq:
+                d = {}
+                d['ticket_id'] = q.ticket_id
+                d['category'] = q.category
+                d['is_approved'] = q.is_approved
+                d['title'] = q.ticket.title
+                d['description'] = q.ticket.description
+                d['creation_date'] = q.ticket.creation_date
+                d['creator_id'] = q.ticket.creator_id
+                d['number_of_upvotes'] = q.ticket.number_of_upvotes
+                d['is_read'] = q.ticket.is_read
+                d['is_open'] = q.ticket.is_open
+                d['is_offensive'] = q.ticket.is_offensive
+                d['is_FAQ'] = q.ticket.is_FAQ
+                # d['responses'] = []
+                # responses = q.ticket.responses
+                # if responses:
+                #     for response in responses:
+                #         d2 = {}
+                #         d2['response_id'] = response.response_id
+                #         d2['responder_id'] = response.responder_id
+                #         d2['response_timestamp'] = response.response_timestamp
+                #         d2['response'] = response.response
+                #         d['responses'].append(d2)
+                result.append(d)
+            return jsonify(result)
         else:
             abort(403, 'Unauthorized')
 
@@ -351,7 +350,6 @@ class FAQApi(Resource):
                 abort(400, message="ticket_id is not in FAQ")
         else:
             abort(403, message="Unauthorized")
-=======
         
 
 class ResponseAPI_by_ticket(Resource):
@@ -521,4 +519,3 @@ class ResponseAPI_by_response_id(Resource): #This class can be used if required.
                 return jsonify({"data": d, "status": "success"})
         else:
             return jsonify({"data": [], "status": "succcess"})
->>>>>>> 6d0818bb4f93ff32cb7cc1bc5dc669db59fbbddd
