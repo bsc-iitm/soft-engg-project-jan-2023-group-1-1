@@ -54,6 +54,7 @@ class Ticket(db.Model):
     is_offensive=db.Column(db.Boolean,nullable=False)
     is_FAQ=db.Column(db.Boolean,nullable=False)
     responses = db.relationship('Response', back_populates='parent_list', lazy='subquery')
+    rating = db.Column(db.Integer)
 
 class Category(db.Model):
     category = db.Column(db.String(50), primary_key=True)
