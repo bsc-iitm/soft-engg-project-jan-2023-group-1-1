@@ -34,3 +34,4 @@ class LocalDevelopmentConfig(Config):
     CACHE_TYPE = 'RedisCache'
     CACHE_REDIS_HOST = 'localhost'
     CACHE_REDIS_PORT = 6379
+    MAILGUN_API_KEY = os.environ['MG_API_KEY']

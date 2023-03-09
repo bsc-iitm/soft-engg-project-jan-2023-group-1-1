@@ -4,12 +4,12 @@ from flask_cors import CORS
 from application.config import LocalDevelopmentConfig
 from application.models import db
 # from application.models import User, Role
-# from application import workers
+from application import workers
 # from flask_caching import Cache
 
 app = None
 api = None
-# celery = None
+celery = None
 # cache = None
 
 def create_app():
@@ -25,19 +25,19 @@ def create_app():
     CORS(app, resources={r'/*':{'origins':'*'}}) 
     app.app_context().push()    
     # create celery
-    # celery = workers.celery
-    # celery.conf.update(
-    #     broker_url = app.config['CELERY_BROKER_URL'],
-    #     result_backend = app.config['CELERY_RESULT_BACKEND']
-    # )
-    # celery.Task = workers.ContextTask
-    # app.app_context().push() 
+    celery = workers.celery
+    celery.conf.update(
+        broker_url = app.config['CELERY_BROKER_URL'],
+        result_backend = app.config['CELERY_RESULT_BACKEND']
+    )
+    celery.Task = workers.ContextTask
+    app.app_context().push() 
 
     # cache = Cache(app)
     # cache.clear()
     # app.app_context().push() 
 
-    return app,api
+    return app,api, celery
 
-app,api = create_app()
+app,api,celery = create_app()
     

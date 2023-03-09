@@ -49,3 +49,13 @@ def get_users(current_user):
         } for user in users]
 
     return jsonify(results)
+
+# from application.workers import celery
+# from application.tasks import send_email
+# @app.route("/email", methods=["POST"])
+# def post_email():
+#     html = request.get_json()['html']
+#     email = request.get_json()['email']
+#     subject = request.get_json()['subject']
+#     send_email.s(eid=email, html=html, subject=subject).apply_async()
+#     return jsonify({'message': 'success'})
