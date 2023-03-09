@@ -132,6 +132,7 @@ class TicketAPI(Resource):
             db.session.commit()
             return 200, "OK"
         else:
+<<<<<<< HEAD
             abort(400, message='No such ticket_id exists for the user')
 
 import secrets,string    
@@ -350,3 +351,174 @@ class FAQApi(Resource):
                 abort(400, message="ticket_id is not in FAQ")
         else:
             abort(403, message="Unauthorized")
+=======
+        
+
+class ResponseAPI_by_ticket(Resource):
+    @token_required
+    def get(user, self):
+        responses = None
+        ticket_id = None
+        args = request.get_json(force = True)
+        try:
+            ticket_id = int(args["ticket_id"])
+        except:
+            abort(403,message = "Please provide a ticket ID for which you need the responses.")
+        
+        try:
+            responses = Response.query.filter_by(ticket_id = ticket_id).all()
+        except:
+            abort(404, message= "There are no tickets by that ID.")
+        
+        responses = list(responses)
+        l = []
+        for item in responses:
+            d = {}
+            d["response_id"] = item.response_id
+            d["ticket_id"] = item.ticket_id
+            d["response"] = item.response
+            d["responder_id"] = item.responder_id
+            d["response_timestamp"] = item.response_timestamp
+            l.append(d)
+        return jsonify({"data": l, "status": "success"})
+
+    @token_required
+    def post(user, self):
+        if user.role_id == 1 or user.role_id == 2:
+            args = request.get_json(force = True)
+            ticket_id = None
+            try:
+                ticket_id = args["ticket_id"]
+            except:
+                abort(403, message = "Please provide the ticket id!")
+            response = None
+            try:
+                response = args["response"]
+            except:
+                abort(403, message = "Please add your response!")
+            responder_id = user.user_id
+            ticket_obj = Ticket.query.filter_by(ticket_id = ticket_id).first()
+            if ticket_obj:
+                response_obj = Response(ticket_id = ticket_id, response = response, responder_id = responder_id)
+                db.session.add(response_obj)
+                db.session.commit()
+                return jsonify({"status": "success"})
+            else:
+                abort(404, message = "This ticket doesn't exist.")
+            
+
+        else:
+            abort(404, message = "You are not authorized to post responses to a ticket.")
+
+    @token_required
+    def patch(user, self):
+        #Allows only to change the response 
+        #All other operations, like changing the ticket id, etc is not allowed.
+
+        if user.role_id == 1 or user.role_id == 2:
+            args = request.get_json(force = True)
+            response = None
+            response_id = None
+            responder_id = user.user_id
+            try:
+                response_id = args["response_id"]
+            except:
+                abort(404, message = "Please provide the response id")
+            try:
+                response = args["response"]
+            except:
+                abort(404, message = "Since your update response was blank, your earlier response hasn't been altered.")
+            response_obj = Response.query.filter_by(responder_id = responder_id, response_id = response_id).first()
+            if response_obj:
+                response_obj.response = response
+                db.session.commit()
+                return jsonify({"status": "success"})
+            else:
+                abort(404, message = "Either your response id is wrong, or this account is not the responder of the particular response.")
+        else:
+            abort(404, message = "You are not authorized to update any responses.")
+    
+    @token_required
+    def delete(user, self):
+        if user.role_id ==1 or user.role_id == 2 or user.role_id == 3:
+            args = request.get_json(force = True)
+            response_id = None
+            responder_id = None
+            try:
+                responder_id_2 = int(args["responder_id"]) 
+                if responder_id_2 and user.role_id == 3: #Admins can delete responses made by student/staff if they wish to.
+                    responder_id = responder_id_2
+            except:
+                responder_id = user.user_id
+            try:
+                response_id = args["response_id"]
+            except:
+                abort(403, message = "Please specify the response id!")
+            response_obj = Response.query.filter_by(response_id = response_id, responder_id = responder_id).first()
+            if response_obj:
+                db.session.delete(response_obj)
+                db.session.commit()
+                return jsonify({"status": "success"})
+            else:
+                abort(404, message = "Either the response you are trying to delete is not yours, or the response doesn't exist in the first place.")
+
+        else:
+            abort(404, message = "You are not authorized to delete responses.")
+
+class ResponseAPI_by_user(Resource):
+    @token_required
+    def get(user, self):
+        if user.role_id == 4: #Only managers can do this. 
+            responses = None
+            responder_id = None
+            args = request.get_json(force = True)
+            try:
+                responder_id= int(args["responder_id"])
+            except:
+                abort(403,message = "Please provide a responder ID for which you need the responses.")
+            
+            try:
+                responses = Response.query.filter_by(responder_id = responder_id).all()
+            except:
+                abort(404, message= "There are no responses by that particular responder ID.")
+            
+            responses = list(responses)
+            l = []
+            for item in responses:
+                d = {}
+                d["response_id"] = item.response_id
+                d["ticket_id"] = item.ticket_id
+                d["response"] = item.response
+                d["responder_id"] = item.responder_id
+                d["response_timestamp"] = item.response_timestamp
+                l.append(d)
+            return jsonify({"data": l, "status": "success"})
+        else:
+            abort(404, message = "Sorry, you don't have access to this feature!")
+
+class ResponseAPI_by_response_id(Resource): #This class can be used if required.
+    @token_required
+    def get(user, self):
+        responses = None
+        response_id = None
+        args = request.get_json(force = True)
+        try:
+            response_id = int(args["response_id"])
+        except:
+            abort(403,message = "Please provide a response ID.")
+        
+        try:
+            responses = Response.query.filter_by(response_id = response_id).first()
+        except:
+            abort(404, message= "There are no tickets by that ID.")
+        if responses:
+                d = {}
+                d["response_id"] = responses.response_id
+                d["ticket_id"] = responses.ticket_id
+                d["response"] = responses.response
+                d["responder_id"] = responses.responder_id
+                d["response_timestamp"] = responses.response_timestamp
+                return jsonify({"data": d, "status": "success"})
+        else:
+            return jsonify({"data": [], "status": "succcess"})
+>>>>>>> 6d0818bb4f93ff32cb7cc1bc5dc669db59fbbddd
