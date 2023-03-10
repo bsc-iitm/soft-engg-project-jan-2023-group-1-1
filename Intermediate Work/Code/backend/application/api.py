@@ -4,6 +4,9 @@ from datetime import datetime
 from dateutil import tz, parser
 from application.models import User, Student, Admin, Manager, Response, Ticket, FAQ, Category
 from application.models import token_required, db
+from application.workers import celery
+from celery import chain
+from application.tasks import send_email, response_notification
 
 class TicketAPI(Resource):
     @token_required
@@ -218,44 +221,41 @@ class UserAPI(Resource):
 class FAQApi(Resource):
     @token_required
     def get(user,self):
-        if user.role_id==3:
-            faq = db.session.query(FAQ).all()
-            result = []
-            # for q in faq:
-            #     d = {}
-            #     d['ticket_id'] = q.ticket_id
-            #     d['category'] = q.category
-            #     d['is_approved'] = q.is_approved
-            #     result.append(d)
-            # return jsonify(result)
-            for q in faq:
-                d = {}
-                d['ticket_id'] = q.ticket_id
-                d['category'] = q.category
-                d['is_approved'] = q.is_approved
-                d['title'] = q.ticket.title
-                d['description'] = q.ticket.description
-                d['creation_date'] = q.ticket.creation_date
-                d['creator_id'] = q.ticket.creator_id
-                d['number_of_upvotes'] = q.ticket.number_of_upvotes
-                d['is_read'] = q.ticket.is_read
-                d['is_open'] = q.ticket.is_open
-                d['is_offensive'] = q.ticket.is_offensive
-                d['is_FAQ'] = q.ticket.is_FAQ
-                # d['responses'] = []
-                # responses = q.ticket.responses
-                # if responses:
-                #     for response in responses:
-                #         d2 = {}
-                #         d2['response_id'] = response.response_id
-                #         d2['responder_id'] = response.responder_id
-                #         d2['response_timestamp'] = response.response_timestamp
-                #         d2['response'] = response.response
-                #         d['responses'].append(d2)
-                result.append(d)
-            return jsonify(result)
-        else:
-            abort(403, 'Unauthorized')
+        faq = db.session.query(FAQ).all()
+        result = []
+        # for q in faq:
+        #     d = {}
+        #     d['ticket_id'] = q.ticket_id
+        #     d['category'] = q.category
+        #     d['is_approved'] = q.is_approved
+        #     result.append(d)
+        # return jsonify(result)
+        for q in faq:
+            d = {}
+            d['ticket_id'] = q.ticket_id
+            d['category'] = q.category
+            d['is_approved'] = q.is_approved
+            d['title'] = q.ticket.title
+            d['description'] = q.ticket.description
+            d['creation_date'] = q.ticket.creation_date
+            d['creator_id'] = q.ticket.creator_id
+            d['number_of_upvotes'] = q.ticket.number_of_upvotes
+            d['is_read'] = q.ticket.is_read
+            d['is_open'] = q.ticket.is_open
+            d['is_offensive'] = q.ticket.is_offensive
+            d['is_FAQ'] = q.ticket.is_FAQ
+            # d['responses'] = []
+            # responses = q.ticket.responses
+            # if responses:
+            #     for response in responses:
+            #         d2 = {}
+            #         d2['response_id'] = response.response_id
+            #         d2['responder_id'] = response.responder_id
+            #         d2['response_timestamp'] = response.response_timestamp
+            #         d2['response'] = response.response
+            #         d['responses'].append(d2)
+            result.append(d)
+        return jsonify(result)
 
     @token_required
     def post(user, self):
@@ -400,9 +400,13 @@ class ResponseAPI_by_ticket(Resource):
                 response_obj = Response(ticket_id = ticket_id, response = response, responder_id = responder_id)
                 db.session.add(response_obj)
                 db.session.commit()
+                if user.role_id == 2 or (user.role_id==1 and user.user_id != ticket_obj.creator_id):
+                    send_notification = chain(response_notification.s(tid = ticket_obj.ticket_id, rid = response_obj.response_id), send_email.s()).apply_async()
+                    send_notification.get()
                 return jsonify({"status": "success"})
             else:
-                abort(404, message = "This ticket doesn't exist.")
+                abort(404, message =
+                       "This ticket doesn't exist.")
             
 
         else:
@@ -606,12 +610,112 @@ class TicketAll(Resource):
                     ticket.is_FAQ = is_FAQ
             except:
                 pass   
-            db.session.commit()
+            rating = None
             try:
-                rating =  args["is_rating"]
+                rating =  args["rating"]
                 ticket.rating = rating
+                #print("I am here!")
             except:
                 pass
+            db.session.commit()
             return jsonify({"message": "success"})
         
-       
+import datetime
+class getResolutionTimes(Resource):
+    #API to get resolution times.
+    #Supports getting resolution times of a single ticket or multiple tickets all at once.
+    @token_required
+    def get(user, self):
+        if user.role_id == 4:
+            args = request.get_json(force = True)
+            creation_time = None
+            solution_time = None
+            ticket_id = None
+            try:
+                ticket_id = args["ticket_id"]
+                #print(ticket_id)
+            except:
+                abort(403, message = "Please enter the ticket ID.")
+            if isinstance(ticket_id, list):
+                data = []        
+                for item in ticket_id:
+                    d = {}
+                    ticket = None
+                    try:
+                        ticket = Ticket.query.filter_by(ticket_id = item).first()
+                    except:
+                        abort(404, message = "No such ticket exists by the given ticket ID.")
+                    if isinstance(ticket.creation_date, str):
+                        d["creation_time"] = datetime.datetime.strptime(ticket.creation_date, '%Y-%m-%d %H:%M:%S.%f')
+                    elif isinstance(ticket.creation_date, datetime.datetime):
+                        d["creation_time"] = ticket.creation_date
+                    else:
+                        abort(403, message = "The ticket object timestamp isn't in either string or datetime format.")
+                    responses = Response.query.filter_by(ticket_id = item).all()
+                    try:
+                        responses = list(responses)
+                        response_times = []
+                        for thing in responses:
+                            if isinstance(thing.response_timestamp, datetime.datetime):
+                                #print("Here 1")
+                                response_times.append(thing.response_timestamp)
+                            elif isinstance(thing.response_timestamp, str):
+                                #print("Here 2")
+                                response_times.append(datetime.strptime(thing.response_timestamp,'%Y-%m-%d %H:%M:%S.%f'))
+                            else:
+                                abort(403, message = "The response object timestamp isn't in either string or datetime format.")
+                        response_time = max(response_times)
+                        d["response_time"] = response_time
+                        d["resolution_time_datetime_format"] = d["response_time"] - d["creation_time"]
+                        d["days"] = d["resolution_time_datetime_format"].days
+                        d["seconds"] = d["resolution_time_datetime_format"].seconds
+                        d["microseconds"] = d["resolution_time_datetime_format"].microseconds
+                        d["response_time"] = str(d["response_time"])
+                        d["resolution_time_datetime_format"] = str(d["resolution_time_datetime_format"])
+                        d["creation_time"] = str(d["creation_time"])
+                        data.append(d)
+                    except:
+                        continue
+                return jsonify({"data": data, "status": "success"})
+            elif isinstance(ticket_id, int):
+                d = {}
+                try:
+                    ticket = Ticket.query.filter_by(ticket_id = ticket_id).first()
+                except:
+                    abort(404, message = "No such ticket exists by the given ticket ID.")
+                if isinstance(ticket.creation_date, str):
+                    d["creation_time"] = datetime.datetime.strptime(ticket.creation_date, '%Y-%m-%d %H:%M:%S.%f')
+                elif isinstance(ticket.creation_date, datetime.datetime):
+                    d["creation_time"] = ticket.creation_date
+                else:
+                    abort(403, message = "The ticket object timestamp isn't in either string or datetime format.")
+                responses = Response.query.filter_by(ticket_id = ticket_id).all()
+                try:
+                    #print("Here")
+                    responses = list(responses)
+                    response_times = []
+                    for thing in responses:
+                        if isinstance(thing.response_timestamp, datetime.datetime):
+                            #print("Here 1")
+                            response_times.append(thing.response_timestamp)
+                        elif isinstance(thing.response_timestamp, str):
+                            #print("Here 2")
+                            response_times.append(datetime.datetime.strptime(thing.response_timestamp,'%Y-%m-%d %H:%M:%S.%f'))
+                        else:
+                            abort(403, message = "The response object timestamp isn't in either string or datetime format.")
+                    #print("Here3")
+                    #print(response_times)
+                    response_time = max(response_times)
+                    d["response_time"] = response_time
+                    d["resolution_time_datetime_format"] = d["response_time"] - d["creation_time"]
+                    d["days"] = d["resolution_time_datetime_format"].days
+                    d["seconds"] = d["resolution_time_datetime_format"].seconds
+                    d["microseconds"] = d["resolution_time_datetime_format"].microseconds
+                    d["response_time"] = str(d["response_time"])
+                    d["resolution_time_datetime_format"] = str(d["resolution_time_datetime_format"])
+                    d["creation_time"] = str(d["creation_time"])
+                    return jsonify({"data": d, "status": "success"})
+                except:
+                    abort(404, message = "This ticket hasn't been responded to yet!")
+        else:
+            return abort(404, message = "You are not authorized to access this feature!")
