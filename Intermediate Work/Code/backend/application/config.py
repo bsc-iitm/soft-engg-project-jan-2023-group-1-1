@@ -33,8 +33,8 @@ class LocalDevelopmentConfig(Config):
     CELERY_RESULT_BACKEND = "redis://localhost:6379/2"
     CACHE_TYPE = 'RedisCache'
     CACHE_REDIS_HOST = 'localhost'
-    CACHE_REDIS_PORT = 
+    CACHE_REDIS_PORT = 6379
     try:
         MAILGUN_API_KEY = os.environ['MG_API_KEY']
-    except:
-        MAILGUN_API_KEY = 'abcd'
+    except: 
+        MAILGUN_API_KEY = 'ABCD'
