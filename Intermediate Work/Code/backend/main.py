@@ -1,4 +1,4 @@
-from application import app, api
+from application import app, api, celery
 
 from application.api import TicketAPI , UserAPI, FAQApi, ResponseAPI_by_ticket, ResponseAPI_by_response_id, ResponseAPI_by_user,TicketAll
 api.add_resource(TicketAPI, '/api/ticket')

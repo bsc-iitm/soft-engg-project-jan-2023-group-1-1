@@ -4,6 +4,9 @@ from datetime import datetime
 from dateutil import tz, parser
 from application.models import User, Student, Admin, Manager, Response, Ticket, FAQ, Category
 from application.models import token_required, db
+from application.workers import celery
+from celery import chain
+from application.tasks import send_email, response_notification
 
 class TicketAPI(Resource):
     @token_required
@@ -400,9 +403,13 @@ class ResponseAPI_by_ticket(Resource):
                 response_obj = Response(ticket_id = ticket_id, response = response, responder_id = responder_id)
                 db.session.add(response_obj)
                 db.session.commit()
+                if user.role_id == 2 or (user.role_id==1 and user.user_id != ticket_obj.creator_id):
+                    send_notification = chain(response_notification.s(tid = ticket_obj.ticket_id, rid = response_obj.response_id), send_email.s()).apply_async()
+                    send_notification.get()
                 return jsonify({"status": "success"})
             else:
-                abort(404, message = "This ticket doesn't exist.")
+                abort(404, message =
+                       "This ticket doesn't exist.")
             
 
         else:
