@@ -9,6 +9,7 @@ api.add_resource(ResponseAPI_by_response_id, '/api/respResp') #For getting respo
 api.add_resource(ResponseAPI_by_user, '/api/respUser') #For getting responses with user id.
 api.add_resource(TicketAll, '/api/ticketAll') #For getting all tickets
 api.add_resource(getResolutionTimes, '/api/getResolutionTimes') # For getting resolution times of support agents, only accessible to managers.
+
 from application.routes import *
 if __name__ == '__main__':
   # Run the Flask app
