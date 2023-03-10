@@ -59,3 +59,10 @@ def get_users(current_user):
 #     subject = request.get_json()['subject']
 #     send_email.s(eid=email, html=html, subject=subject).apply_async()
 #     return jsonify({'message': 'success'})
+
+# from application.workers import celery
+# from application.tasks import unanswered_ticket_notification
+# @app.route("/notification")
+# def get_notif():
+#     unanswered_ticket_notification.s().apply_async()
+#     return "OK"

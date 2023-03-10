@@ -6,3 +6,4 @@ myEnv/
 *.pyc
 *.sqlite3
 *.rdb
+*.db
