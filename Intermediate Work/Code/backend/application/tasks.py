@@ -15,7 +15,7 @@ def unanswered_ticket_notification():
     now = datetime.now()
     three_day_old_timestamp = now - timedelta(hours=72)
     unresolved_tickets = db.session.query(Ticket).filter(Ticket.is_open==1, Ticket.creation_date < three_day_old_timestamp).all()
-    agents_user_ids = [a.user_id for a in db.session.query(Support_Agent.user_id).all() ]
+    agents_user_ids = [a.user_id for a in db.session.query(User.user_id).filter(User.role_id==2).all() ]
     unanswered_tickets = []
     if unresolved_tickets:
         for ticket in unresolved_tickets:
