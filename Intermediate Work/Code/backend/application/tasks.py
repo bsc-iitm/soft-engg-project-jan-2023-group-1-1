@@ -8,7 +8,7 @@ from celery.schedules import crontab
 
 @celery.on_after_finalize.connect
 def setup_periodic_tasks(sender, **kwargs):
-    sender.add_periodic_task(crontab(hour=11, minute=30), unanswered_ticket_notification.s(), name='Daily Unanswered Ticket Reminder Reminder')
+    sender.add_periodic_task(crontab(hour=11, minute=30), unanswered_ticket_notification.s(), name='Daily Unanswered Ticket Reminder')
     sender.add_periodic_task(crontab(minute=30, hour=4, day=1), poor_resolution_time.s(), name='Monthly Agent Resolution Time Report')
 
 
@@ -49,7 +49,7 @@ def poor_resolution_time():
             <ol>
         '''
         for tup in all_agents_avg_resolution_time:
-            html += f'<li> {tup[0]} has an average resolution time of {tup[1]} hours and has {tup[2]} unresolved tickets'
+            html += f'<li> {tup[0]} has an average resolution time of {tup[1]} hours and has {tup[2]} unresolved tickets </li>'
         html+= '</ol> </body> </html>'
         send_email.s((html, eid, subject)).apply_async()
 
@@ -81,7 +81,7 @@ def unanswered_ticket_notification():
             <ol>
         '''
         for ticket in unanswered_tickets:
-            html += f'<li> {ticket.title} created on {ticket.creation_date.strftime("%Y-%m-%d")} is still unanswered'
+            html += f'<li> {ticket.title} created on {ticket.creation_date.strftime("%Y-%m-%d")} is still unanswered </li>'
         html+= '</ol> </body> </html>'
 
         eid = db.session.query(User).filter(User.role_id==4).first().email_id
