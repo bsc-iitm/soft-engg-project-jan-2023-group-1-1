@@ -221,44 +221,41 @@ class UserAPI(Resource):
 class FAQApi(Resource):
     @token_required
     def get(user,self):
-        if user.role_id==3:
-            faq = db.session.query(FAQ).all()
-            result = []
-            # for q in faq:
-            #     d = {}
-            #     d['ticket_id'] = q.ticket_id
-            #     d['category'] = q.category
-            #     d['is_approved'] = q.is_approved
-            #     result.append(d)
-            # return jsonify(result)
-            for q in faq:
-                d = {}
-                d['ticket_id'] = q.ticket_id
-                d['category'] = q.category
-                d['is_approved'] = q.is_approved
-                d['title'] = q.ticket.title
-                d['description'] = q.ticket.description
-                d['creation_date'] = q.ticket.creation_date
-                d['creator_id'] = q.ticket.creator_id
-                d['number_of_upvotes'] = q.ticket.number_of_upvotes
-                d['is_read'] = q.ticket.is_read
-                d['is_open'] = q.ticket.is_open
-                d['is_offensive'] = q.ticket.is_offensive
-                d['is_FAQ'] = q.ticket.is_FAQ
-                # d['responses'] = []
-                # responses = q.ticket.responses
-                # if responses:
-                #     for response in responses:
-                #         d2 = {}
-                #         d2['response_id'] = response.response_id
-                #         d2['responder_id'] = response.responder_id
-                #         d2['response_timestamp'] = response.response_timestamp
-                #         d2['response'] = response.response
-                #         d['responses'].append(d2)
-                result.append(d)
-            return jsonify(result)
-        else:
-            abort(403, 'Unauthorized')
+        faq = db.session.query(FAQ).all()
+        result = []
+        # for q in faq:
+        #     d = {}
+        #     d['ticket_id'] = q.ticket_id
+        #     d['category'] = q.category
+        #     d['is_approved'] = q.is_approved
+        #     result.append(d)
+        # return jsonify(result)
+        for q in faq:
+            d = {}
+            d['ticket_id'] = q.ticket_id
+            d['category'] = q.category
+            d['is_approved'] = q.is_approved
+            d['title'] = q.ticket.title
+            d['description'] = q.ticket.description
+            d['creation_date'] = q.ticket.creation_date
+            d['creator_id'] = q.ticket.creator_id
+            d['number_of_upvotes'] = q.ticket.number_of_upvotes
+            d['is_read'] = q.ticket.is_read
+            d['is_open'] = q.ticket.is_open
+            d['is_offensive'] = q.ticket.is_offensive
+            d['is_FAQ'] = q.ticket.is_FAQ
+            # d['responses'] = []
+            # responses = q.ticket.responses
+            # if responses:
+            #     for response in responses:
+            #         d2 = {}
+            #         d2['response_id'] = response.response_id
+            #         d2['responder_id'] = response.responder_id
+            #         d2['response_timestamp'] = response.response_timestamp
+            #         d2['response'] = response.response
+            #         d['responses'].append(d2)
+            result.append(d)
+        return jsonify(result)
 
     @token_required
     def post(user, self):
