@@ -408,7 +408,6 @@ class ResponseAPI_by_ticket(Resource):
                 db.session.commit()
                 if user.role_id == 2 or (user.role_id==1 and user.user_id != ticket_obj.creator_id):
                     send_notification = chain(response_notification.s(tid = ticket_obj.ticket_id, rid = response_obj.response_id), send_email.s()).apply_async()
-                    send_notification.get()
                 return jsonify({"status": "success"})
             else:
                 abort(404, message =
