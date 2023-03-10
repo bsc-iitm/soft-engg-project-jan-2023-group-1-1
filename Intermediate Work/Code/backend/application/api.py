@@ -111,7 +111,13 @@ class TicketAPI(Resource):
                     is_FAQ = args["is_FAQ"]
                     ticket.is_FAQ = is_FAQ
             except:
-                pass   
+                pass 
+            try:
+                rating =  args["rating"]
+                ticket.rating = rating
+                #print("I am here!")
+            except:
+                pass  
             db.session.commit()
             return jsonify({"message": "success"})
         
