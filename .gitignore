@@ -3,3 +3,6 @@
 __pycache__/
 env/
 myEnv/
+*.pyc
+*.sqlite3
+*.rdb
