@@ -659,27 +659,31 @@ class getResolutionTimes(Resource):
                         abort(403, message = "The ticket object timestamp isn't in either string or datetime format.")
                     responses = Response.query.filter_by(ticket_id = item).all()
                     try:
-                        responses = list(responses)
-                        response_times = []
-                        for thing in responses:
-                            if isinstance(thing.response_timestamp, datetime.datetime):
-                                #print("Here 1")
-                                response_times.append(thing.response_timestamp)
-                            elif isinstance(thing.response_timestamp, str):
-                                #print("Here 2")
-                                response_times.append(datetime.strptime(thing.response_timestamp,'%Y-%m-%d %H:%M:%S.%f'))
-                            else:
-                                abort(403, message = "The response object timestamp isn't in either string or datetime format.")
-                        response_time = max(response_times)
-                        d["response_time"] = response_time
-                        d["resolution_time_datetime_format"] = d["response_time"] - d["creation_time"]
-                        d["days"] = d["resolution_time_datetime_format"].days
-                        d["seconds"] = d["resolution_time_datetime_format"].seconds
-                        d["microseconds"] = d["resolution_time_datetime_format"].microseconds
-                        d["response_time"] = str(d["response_time"])
-                        d["resolution_time_datetime_format"] = str(d["resolution_time_datetime_format"])
-                        d["creation_time"] = str(d["creation_time"])
-                        data.append(d)
+                        if ticket.is_open == False:
+                            responses = list(responses)
+                            response_times = []
+                            for thing in responses:
+                                if isinstance(thing.response_timestamp, datetime.datetime):
+                                    #print("Here 1")
+                                    response_times.append(thing.response_timestamp)
+                                elif isinstance(thing.response_timestamp, str):
+                                    #print("Here 2")
+                                    response_times.append(datetime.strptime(thing.response_timestamp,'%Y-%m-%d %H:%M:%S.%f'))
+                                else:
+                                    abort(403, message = "The response object timestamp isn't in either string or datetime format.")
+                            response_time = max(response_times)
+                            d["response_time"] = response_time
+                            d["resolution_time_datetime_format"] = d["response_time"] - d["creation_time"]
+                            d["days"] = d["resolution_time_datetime_format"].days
+                            d["seconds"] = d["resolution_time_datetime_format"].seconds
+                            d["microseconds"] = d["resolution_time_datetime_format"].microseconds
+                            d["response_time"] = str(d["response_time"])
+                            d["resolution_time_datetime_format"] = str(d["resolution_time_datetime_format"])
+                            d["creation_time"] = str(d["creation_time"])
+                            d["ticket_id"] = item
+                            data.append(d)
+                        else:
+                            raise ValueError
                     except:
                         continue
                 return jsonify({"data": data, "status": "success"})
@@ -720,6 +724,7 @@ class getResolutionTimes(Resource):
                     d["response_time"] = str(d["response_time"])
                     d["resolution_time_datetime_format"] = str(d["resolution_time_datetime_format"])
                     d["creation_time"] = str(d["creation_time"])
+                    d["ticket_id"] = ticket_id
                     return jsonify({"data": d, "status": "success"})
                 except:
                     abort(404, message = "This ticket hasn't been responded to yet!")
