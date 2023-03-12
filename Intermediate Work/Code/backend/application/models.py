@@ -65,6 +65,11 @@ class FAQ(db.Model):
     is_approved = db.Column(db.Boolean,nullable=False)
     ticket = db.relationship('Ticket', backref='faq')
 
+class Flagged_Post(db.Model):
+      ticket_id = db.Column(db.Integer, db.ForeignKey('ticket.ticket_id'), primary_key = True)
+      flagger_id = db.Column(db.Integer, db.ForeignKey('user.user_id'))
+      creator_id = db.Column(db.Integer, db.ForeignKey('user.user_id'))
+
 def token_required(function):
 	@functools.wraps(function)
 	def loggedin(*args,**kwargs):
