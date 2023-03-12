@@ -688,6 +688,7 @@ class getResolutionTimes(Resource):
                         continue
                 return jsonify({"data": data, "status": "success"})
             elif isinstance(ticket_id, int):
+                #print("Here")
                 d = {}
                 try:
                     ticket = Ticket.query.filter_by(ticket_id = ticket_id).first()
@@ -701,32 +702,36 @@ class getResolutionTimes(Resource):
                     abort(403, message = "The ticket object timestamp isn't in either string or datetime format.")
                 responses = Response.query.filter_by(ticket_id = ticket_id).all()
                 try:
-                    #print("Here")
-                    responses = list(responses)
-                    response_times = []
-                    for thing in responses:
-                        if isinstance(thing.response_timestamp, datetime.datetime):
-                            #print("Here 1")
-                            response_times.append(thing.response_timestamp)
-                        elif isinstance(thing.response_timestamp, str):
-                            #print("Here 2")
-                            response_times.append(datetime.datetime.strptime(thing.response_timestamp,'%Y-%m-%d %H:%M:%S.%f'))
-                        else:
-                            abort(403, message = "The response object timestamp isn't in either string or datetime format.")
-                    #print("Here3")
-                    #print(response_times)
-                    response_time = max(response_times)
-                    d["response_time"] = response_time
-                    d["resolution_time_datetime_format"] = d["response_time"] - d["creation_time"]
-                    d["days"] = d["resolution_time_datetime_format"].days
-                    d["seconds"] = d["resolution_time_datetime_format"].seconds
-                    d["microseconds"] = d["resolution_time_datetime_format"].microseconds
-                    d["response_time"] = str(d["response_time"])
-                    d["resolution_time_datetime_format"] = str(d["resolution_time_datetime_format"])
-                    d["creation_time"] = str(d["creation_time"])
-                    d["ticket_id"] = ticket_id
-                    return jsonify({"data": d, "status": "success"})
+                    #print("Inside try")
+                    if not(ticket.is_open):
+                        #print("Here")
+                        responses = list(responses)
+                        response_times = []
+                        for thing in responses:
+                            if isinstance(thing.response_timestamp, datetime.datetime):
+                                #print("Here 1")
+                                response_times.append(thing.response_timestamp)
+                            elif isinstance(thing.response_timestamp, str):
+                                #print("Here 2")
+                                response_times.append(datetime.datetime.strptime(thing.response_timestamp,'%Y-%m-%d %H:%M:%S.%f'))
+                            else:
+                                abort(403, message = "The response object timestamp isn't in either string or datetime format.")
+                        #print("Here3")
+                        #print(response_times)
+                        response_time = max(response_times)
+                        d["response_time"] = response_time
+                        d["resolution_time_datetime_format"] = d["response_time"] - d["creation_time"]
+                        d["days"] = d["resolution_time_datetime_format"].days
+                        d["seconds"] = d["resolution_time_datetime_format"].seconds
+                        d["microseconds"] = d["resolution_time_datetime_format"].microseconds
+                        d["response_time"] = str(d["response_time"])
+                        d["resolution_time_datetime_format"] = str(d["resolution_time_datetime_format"])
+                        d["creation_time"] = str(d["creation_time"])
+                        d["ticket_id"] = ticket_id
+                        return jsonify({"data": d, "status": "success"})
+                    else:
+                        abort(403, message = "This ticket has not been closed yet.")
                 except:
-                    abort(404, message = "This ticket hasn't been responded to yet!")
+                    abort(404, message = "This ticket hasn't been responded to yet or is still open!")
         else:
             return abort(404, message = "You are not authorized to access this feature!")
