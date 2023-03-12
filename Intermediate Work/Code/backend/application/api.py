@@ -2,7 +2,7 @@ from flask_restful import Resource, request, abort
 from flask import jsonify
 from datetime import datetime
 from dateutil import tz, parser
-from application.models import User, Student, Admin, Manager, Response, Ticket, FAQ, Category
+from application.models import User, Student, Admin, Manager, Response, Ticket, FAQ, Category, Flagged_Post
 from application.models import token_required, db
 from application.workers import celery
 from celery import chain
@@ -735,3 +735,85 @@ class getResolutionTimes(Resource):
                     abort(404, message = "This ticket hasn't been responded to yet or is still open!")
         else:
             return abort(404, message = "You are not authorized to access this feature!")
+
+class invalidFlaggerException(Exception):
+    pass
+
+class invalidTicketException(Exception):
+    pass
+
+class invalidCreatorException(Exception):
+    pass
+
+class flaggedPostAPI(Resource):
+    #Only managers can view all the flagged posts.
+    @token_required
+    def get(user,self):
+        if user.role_id == 3:
+            l = []
+            flagged_posts = Flagged_Post.query.filter_by().all()
+            if flagged_posts is not None:
+                flagged_posts = list(flagged_posts)
+                for item in flagged_posts:
+                    d = {}
+                    d["ticket_id"] = item.ticket_id
+                    d["flagger_id"] = item.flagger_id
+                    d["creator_id"] = item.creator_id
+                    l.append(d)
+                return jsonify({"data": l, "status": "success"})
+            else:
+                return jsonify({"data": l, "status" : "success"})
+        else:
+            abort(404, message = "You are not authorized to access this feature.")
+    
+    @token_required
+    #Only support agents can add a new post as a flagged post
+    #Will be triggered from the frontend when the support agent presses the button for a post to be offensive.
+    #From frontend, two actions will be triggered. One would set is_offensive as True in the ticket database, and the other would use the post request here to add it to the flagged post class
+    def post(user,self):
+        if user.role_id ==2:
+            args = request.get_json(force = True)
+            flagger_id = None
+            creator_id = None
+            ticket_id = None
+            flagger = None
+            creator = None
+            ticket = None
+            try:
+                flagger_id = args["flagger_id"]
+            except:
+                abort(403, message = "Please pass the flagger ID.") 
+            try:   
+                creator_id = args["creator_id"]
+            except:
+                abort(403, message = "Please pass the creator ID.")
+            try:
+                ticket_id = args["ticket_id"]
+            except:
+                abort(403, message = "Please pass the Ticket ID.")
+            try:
+                flagger = User.query.filter_by(user_id = flagger_id, role_id = 2).first()
+                if flagger is None:
+                    raise invalidFlaggerException
+            except invalidFlaggerException:
+                abort(403, message = "The person who flagged must be a support agent.")
+            
+            try:
+                creator = User.query.filter_by(user_id = creator_id, role_id = 1).first()
+                if creator is None:
+                    raise invalidCreatorException
+            except invalidCreatorException:
+                abort(403, message = "The person who created the post must be a student.")
+            
+            try:
+                ticket = Ticket.query.filter_by(ticket_id = ticket_id, creator_id = creator_id).first()
+                if ticket is None:
+                    raise invalidTicketException
+            except:
+                abort(403, message ="The referenced ticket is not created by the referenced person/ the ticket doesn't exist in the first place.")
+            flagged_post = Flagged_Post(creator_id = creator_id, ticket_id = ticket_id, flagger_id = flagger_id)
+            db.session.add(flagged_post)
+            db.session.commit()
+            return jsonify({"status": "success"})
+        else:
+            abort(404, message = "You are not authorized to access this feature.")
