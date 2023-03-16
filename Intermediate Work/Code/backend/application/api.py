@@ -357,10 +357,9 @@ class FAQApi(Resource):
         else:
             abort(403, message="Unauthorized")
         
-
-class ResponseAPI_by_ticket(Resource):
-    @token_required
-    def get(user, self):
+class getResponseAPI_by_ticket(Resource):
+     @token_required
+     def post(user, self):
         responses = None
         ticket_id = None
         args = request.get_json(force = True)
@@ -385,7 +384,8 @@ class ResponseAPI_by_ticket(Resource):
             d["response_timestamp"] = item.response_timestamp
             l.append(d)
         return jsonify({"data": l, "status": "success"})
-
+     
+class ResponseAPI_by_ticket(Resource):
     @token_required
     def post(user, self):
         if user.role_id == 1 or user.role_id == 2:
@@ -474,7 +474,7 @@ class ResponseAPI_by_ticket(Resource):
 
 class ResponseAPI_by_user(Resource):
     @token_required
-    def get(user, self):
+    def post(user, self):
         if user.role_id == 4: #Only managers can do this. 
             responses = None
             responder_id = None
@@ -505,7 +505,7 @@ class ResponseAPI_by_user(Resource):
 
 class ResponseAPI_by_response_id(Resource): #This class can be used if required.
     @token_required
-    def get(user, self):
+    def post(user, self):
         responses = None
         response_id = None
         args = request.get_json(force = True)
@@ -630,7 +630,7 @@ class getResolutionTimes(Resource):
     #API to get resolution times.
     #Supports getting resolution times of a single ticket or multiple tickets all at once.
     @token_required
-    def get(user, self):
+    def post(user, self):
         if user.role_id == 4:
             args = request.get_json(force = True)
             creation_time = None
