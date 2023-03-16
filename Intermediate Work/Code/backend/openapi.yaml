@@ -51,6 +51,113 @@ paths:
                   message:
                     type: string
                     example: "You are not authorized to view this page"
+    post:
+      security:
+        - secret_authtoken: []
+      tags:
+        - UserAPI
+      summary: "Add a new user"
+      description: " Add a new user" 
+      operationId: postUserAPI
+      requestBody: 
+        content:
+          application/json:
+            schema:
+              required:
+                - email_id
+                - role_id
+              type: object
+              properties:
+                email_id:
+                  type: string
+                  description: "Email address of the user to be added"
+                  example: "abc@example.com"
+                role_id:
+                  type: integer
+                  example: 1
+                  description: "Role ID to be assigned to the user"
+      responses:
+        '200':
+          description: "Added user successfully"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: 
+                    type: string
+                    example: "User created successfully"
+        '403':
+          description: Unauthorized User
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "You are not authorized to view this page"
+    patch:
+      security:
+        - secret_authtoken: []
+      tags:
+        - UserAPI
+      summary: "Update an existing user"
+      description: "Update details of an existing user" 
+      operationId: patchUserAPI
+      requestBody: 
+        content:
+          application/json:
+            schema:
+              required: 
+                - user_id
+                
+              type: object
+              properties:
+                user_id:
+                  type: integer
+                  example: 1
+                user_name:
+                  type: string
+                  example: "myusername"
+                email_id:
+                  type: string
+                  example: "abc@example.com"
+                password:
+                  type: string
+                  example: "password12345"
+      responses:
+        '200':
+          description: "User updated successfully"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: 
+                    type: string
+                    example: "User updated successfully"
+        '403':
+          description: Only Admins can edit email
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "You are can't edit email"
+        '400':
+          description: "Bad Request. Error in updating user. See message"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "user_id must exist and should be integer"
+        
   /api/respResp:
     post:
       tags:
