@@ -566,6 +566,8 @@ class TicketAll(Resource):
             ticket = None
             try:
                 ticket = Ticket.query.filter_by(ticket_id = a).first()
+                if ticket is None:
+                    raise ValueError
             except:
                 abort(404, message = "There is no such ticket by that ID")
             title = None
@@ -648,6 +650,8 @@ class getResolutionTimes(Resource):
                     ticket = None
                     try:
                         ticket = Ticket.query.filter_by(ticket_id = item).first()
+                        if ticket is None:
+                            continue
                     except:
                         abort(404, message = "No such ticket exists by the given ticket ID.")
                     if isinstance(ticket.creation_date, str):
@@ -691,6 +695,8 @@ class getResolutionTimes(Resource):
                 d = {}
                 try:
                     ticket = Ticket.query.filter_by(ticket_id = ticket_id).first()
+                    if ticket is None:
+                        raise ValueError
                 except:
                     abort(404, message = "No such ticket exists by the given ticket ID.")
                 if isinstance(ticket.creation_date, str):
