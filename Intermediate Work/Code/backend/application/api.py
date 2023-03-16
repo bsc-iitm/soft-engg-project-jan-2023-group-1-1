@@ -160,7 +160,7 @@ class UserAPI(Resource):
                     d['email_id']=user.email_id
                     d['role_id']=user.role_id
                     result.append(d)
-            return jsonify(result)
+            return jsonify({"data": result})
         else:
             abort(403,message="You are not authorized to view this page")
     @token_required

@@ -7,6 +7,8 @@ info:
 servers:
   - url: http://127.0.0.1:5000
 tags:
+  - name: UserAPI
+    description: Endpoint to create, read, delete, and update Users
   - name: ResponseAPI_by_response_id
     description: API for Responses by response ID
   - name: ResponseAPI_by_user
@@ -18,6 +20,37 @@ tags:
   - name: flaggedPostAPI
     description: Access all the flagged Posts.
 paths:
+  /api/user:
+    get:
+      security: 
+        - secret_authtoken: []
+      tags:
+        - UserAPI
+      summary: "Retreive all users"
+      description: "Retreive all users"
+      operationId: getUsers
+      responses:
+        '200':
+          description: "Retreived all users successfully"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: 
+                    type: array
+                    items: 
+                      $ref: '#/definitions/User'
+        '403':
+          description: Unauthorized User
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "You are not authorized to view this page"
   /api/respResp:
     post:
       tags:
@@ -442,9 +475,45 @@ paths:
                       example: "You are not authorized to access this feature."
       security:
         - secret_authtoken: []
-          
+definitions:
+  User:
+    required:
+        - user_id
+        - user_name
+        - email_id
+        - role_id
+    type: object
+    properties:
+        user_id:
+          type: integer
+          description: "Internal User ID assigned to each user" 
+          example: 1
+        user_name:
+          type: string
+          description: "username corresponding to the user"
+          example: "myusername"
+        email_id: 
+          type: string
+          description: "email address corresponding to the user"
+          example: "abc@example.com"
+        role_id:
+          type: integer
+          description: "Internal Role ID assigned based on the type of user (student, admin, manager, support agent)"
+          example: 1
+
 components:
   schemas:
+    User:
+      required:
+        - password
+      allOf:
+        - $ref: "#/definitions/User"
+      type: object
+      properties:
+        password:
+          type: string
+          description: "Password for logging in and authenticating users"
+          example: "password12345"
     Flagged_Post:
       required:
         - ticket_id
