@@ -55,7 +55,7 @@ paths:
       "ticket_id": 1,
       "response": "The query you raised has been resolved.",
       "responder_id": 5,
-      "response_timestamp": "2023-03-08 17:31:14.595349"
+      "response_timestamp": "Fri, 10 Mar 2023 06:36:58 GMT"
     }]
                   status: 
                     type: string
@@ -121,7 +121,7 @@ paths:
       "ticket_id": 1,
       "response": "The query you raised has been resolved.",
       "responder_id": 5,
-      "response_timestamp": "2023-03-08 17:31:14.595349"
+      "response_timestamp": "Fri, 10 Mar 2023 06:36:58 GMT"
     }]
                   status: 
                     type: string
@@ -139,7 +139,7 @@ paths:
                     type: string
                     example: "Please provide a responder_id"
         '404':
-          description: "There are no responses by that ID."
+          description: "Sorry, you don't have access to this feature!"
           content:
             application/json:
               schema:
@@ -147,7 +147,7 @@ paths:
                 properties:
                   message:
                     type: string
-                    example: "There are no responses by that responder ID."
+                    example: "Sorry, you don't have access to this feature!"
       security:
         - secret_authtoken: []
   /api/ticketAll:
@@ -175,7 +175,7 @@ paths:
       "ticket_id": 1,
       "title": "Dashboard Not Loading",
       "description": "Unresponsive Dashboard",
-      "creation_date": "2023-03-08 17:31:14.595349",
+      "creation_date": "Fri, 10 Mar 2023 06:36:58 GMT",
       "creator_id": 2,
       "number_of_upvotes": 20,
       "is_read": true,
@@ -306,11 +306,11 @@ paths:
                        $ref: '#/components/schemas/Response'
                        
                     example:  [{
-      "creation_time": "2023-03-05 17:31:14.595349",
+      "creation_time": "Fri, 10 Mar 2023 06:36:58 GMT",
       "days": 2,
       "microseconds": 583678,
       "resolution_time_datetime_format": "2 days, 21:40:12.583678",
-      "response_time": "2023-03-07 15:11:27.179027",
+      "response_time": "Fri, 10 Mar 2023 06:36:58 GMT",
       "seconds": 78012,
       "ticket_id": 2,
     }]
@@ -496,7 +496,7 @@ components:
           type: string
           format: date time
           description: Python timestamp for the response when it was posted
-          example: "2023-03-07 15:11:27.179027"
+          example: "Fri, 10 Mar 2023 06:36:58 GMT"
       xml:
         name: Response
 
