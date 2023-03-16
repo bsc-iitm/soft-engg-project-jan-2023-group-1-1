@@ -47,7 +47,7 @@ class Ticket(db.Model):
     title=db.Column(db.String(100),nullable=False)
     description=db.Column(db.String(100),nullable=False)
     creation_date=db.Column(db.DateTime,nullable=False, default=datetime.utcnow())
-    creator_id=db.Column(db.Integer, db.ForeignKey('user.user_id'))
+    creator_id=db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
     number_of_upvotes=db.Column(db.Integer,default=0)
     is_read=db.Column(db.Boolean,nullable=False)
     is_open=db.Column(db.Boolean,nullable=False)

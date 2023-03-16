@@ -26,8 +26,9 @@ class TicketAPI(Resource):
                 d['is_open']=t.is_open
                 d['is_offensive']=t.is_offensive
                 d['is_FAQ']=t.is_FAQ
+                d['rating']=t.rating
                 result.append(d)
-            return jsonify(result)
+            return jsonify({"data": result})
         else:
             abort(403,message="You are not authorized to view this page")
     @token_required

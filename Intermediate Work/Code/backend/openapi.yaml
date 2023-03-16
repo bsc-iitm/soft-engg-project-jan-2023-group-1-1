@@ -9,6 +9,8 @@ servers:
 tags:
   - name: UserAPI
     description: Endpoint to create, read, delete, and update Users
+  - name: TicketAPI
+    description: Endpoint to create, read, delete, and update Tickets
   - name: ResponseAPI_by_response_id
     description: API for Responses by response ID
   - name: ResponseAPI_by_user
@@ -207,7 +209,39 @@ paths:
                   message:
                     type: string
                     example: "user_id must exist and should be integer"
-        
+  /api/ticket:
+    get:
+      security: 
+        - secret_authtoken: []
+      tags:
+        - TicketAPI
+      summary: "Retreive all Tickets corresponding to a user"
+      description: "Retreive all Tickets corresponding to a user"
+      operationId: getTickets
+      responses:
+        '200':
+          description: "Retreived all tickets successfully"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: 
+                    type: array
+                    items: 
+                      $ref: '#/components/schemas/Ticket'
+
+        '403':
+          description: Unauthorized User
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "You are not authorized to view this page"
+  
   /api/respResp:
     post:
       tags:
@@ -658,6 +692,43 @@ definitions:
           description: "Internal Role ID assigned based on the type of user (student, admin, manager, support agent)"
           example: 1
 
+  Ticket:
+    required:
+      - title
+      - description
+      - number_of_upvotes
+      - is_read
+      - is_open
+      - is_offensive
+      - is_FAQ
+    type: object
+    properties:
+        title:
+          type: string
+          description: "Title of the ticket created by the user"
+          example: "ID Card Address Error"
+        description: 
+          type: string
+          description: "Ticket description"
+          example: "The address on my ID card is incorrect"
+        number_of_upvotes:
+          type: integer
+          description: "Number of time the ticket has been upvoted"
+          example: 10
+        is_read: 
+          type: boolean
+          example: true
+          description: "true if ticket has been read by a support agent. false otherwise"
+        is_open:
+          type: boolean
+          example: false
+          description: "true if ticket is still unresolved. false if resolved"
+        is_FAQ: 
+          type: boolean
+          example: true
+          description: "true if ticket has been suggested by support agent to the admin to add to the FAQ. false otherwise"
+
+
 components:
   schemas:
     User:
@@ -671,6 +742,39 @@ components:
           type: string
           description: "Password for logging in and authenticating users"
           example: "password12345"
+      xml:
+        name: User
+    
+    Ticket:
+      required:
+        - creation_date
+        - ticket_id
+        - creator_id
+      allOf:
+        - $ref: "#/definitions/Ticket"
+      type: object
+      properties:
+        creation_date: 
+          type: string
+          example: "2023-03-08 17:31:14.595349"
+          description: "Date and time caputured when ticket is created"
+        ticket_id:
+          type: integer
+          description: "Internal Ticket ID assigned to each Ticket" 
+          example: 1
+        creator_id:
+          type: integer
+          description: "User ID of the person who created the ticket"
+          example: 2
+        rating: 
+          type: integer
+          description: "Rating of the response to the ticket"
+          example: 5
+        is_offensive:
+          type: boolean
+          example: false
+          description: "true if a support agent has flagged this post, false otherwise"
+        
     Flagged_Post:
       required:
         - ticket_id
