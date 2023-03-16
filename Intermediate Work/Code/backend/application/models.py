@@ -60,7 +60,7 @@ class Category(db.Model):
     category = db.Column(db.String(50), primary_key=True)
 
 class FAQ(db.Model):
-    ticket_id = db.Column(db.Integer,db.ForeignKey('ticket.ticket_id'),primary_key=True,autoincrement=True)
+    ticket_id = db.Column(db.Integer,db.ForeignKey('ticket.ticket_id'),primary_key=True)
     category = db.Column(db.String, db.ForeignKey('category.category'))
     is_approved = db.Column(db.Boolean,nullable=False)
     ticket = db.relationship('Ticket', backref='faq')
