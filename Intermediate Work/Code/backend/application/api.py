@@ -60,7 +60,7 @@ class TicketAPI(Resource):
                 #print(a)
                 #print(user.user_id)
             except:
-                abort(403, message = "Please mention the ticketId field in your form")
+                abort(400, message = "Please mention the ticketId field in your form")
             ticket = None
             try:
                 ticket = Ticket.query.filter_by(ticket_id = a, creator_id = user.user_id).first()
@@ -140,7 +140,7 @@ class TicketAPI(Resource):
                     db.session.commit() 
             db.session.delete(current_ticket)
             db.session.commit()
-            return 200, "OK"
+            return jsonify({"message": "Ticket deleted successfully"})
         else:
             abort(400, message='No such ticket_id exists for the user')
 

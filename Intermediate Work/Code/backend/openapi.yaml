@@ -275,7 +275,113 @@ paths:
                   message:
                     type: string
                     example: "You are not authorized to view this page"
+    patch:
+      security:
+        - secret_authtoken: []
+      tags:
+        - TicketAPI
+      summary: "Update an existing Ticket"
+      description: "Update details of an existing Ticket" 
+      operationId: patchTicketAPI
+      requestBody: 
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: "#/definitions/Ticket"
+                - type: object
+                - properties: 
+                    ticket_id: 
+                      type: integer
+                      example: 1
+                    rating:
+                      type: integer
+                      example: 2
 
+      responses:
+        '200':
+          description: "Ticket updated successfully"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: 
+                    type: string
+                    example: "Ticket updated successfully"
+        '403':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "You are not authorized to access this"
+        '400':
+          description: "Bad Request. Error in updating ticket. See message"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Please mention the ticketId field in your form"
+        '404':
+          description: Ticket not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "There is no such ticket by that ID"
+    delete:
+      security: 
+        - secret_authtoken: []
+      tags:
+        - TicketAPI
+      summary: "Delete a Ticket"
+      description: "Delete Ticket by ticket_id"
+      operationId: deleteTicketAPI
+      requestBody: 
+        content: 
+          application/json:
+            schema:
+              required:
+                - ticket_id
+              type: object
+              properties: 
+                ticket_id:
+                  type: integer
+                  example: 1          
+      responses:
+        '200':
+          description: "Ticket deleted successfully"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: 
+                    type: string
+                    example: "Ticket deleted successfully"
+
+        '400':
+          description: "Bad Request. Error in deleting ticket. See message"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "No such ticket_id exists for the user"      
+  
+  
   /api/respResp:
     post:
       tags:
