@@ -157,6 +157,56 @@ paths:
                   message:
                     type: string
                     example: "user_id must exist and should be integer"
+    delete:
+      security: 
+        - secret_authtoken: []
+      tags:
+        - UserAPI
+      summary: "Delete Particular user"
+      description: "Delete user by user_id"
+      operationId: deleteUserAPI
+      requestBody: 
+        content: 
+          application/json:
+            schema:
+              required:
+                - user_id
+              type: object
+              properties: 
+                user_id:
+                  type: integer
+                  example: 1          
+      responses:
+        '200':
+          description: "User deleted successfully"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: 
+                    type: string
+                    example: "User deleted successfully"
+        '403':
+          description: Only Admins can delete users
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized"
+        '400':
+          description: "Bad Request. Error in updating user. See message"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "user_id must exist and should be integer"
         
   /api/respResp:
     post:

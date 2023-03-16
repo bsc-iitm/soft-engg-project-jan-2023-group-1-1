@@ -177,17 +177,20 @@ class UserAPI(Resource):
             abort(403,message="You are not authorized to view this page")
     @token_required
     def delete(user, self):
-        try:
-            user_id = int(request.get_json()['user_id'])
-        except:
-            abort(400, 'user_id must exist and should be integer')
-        current_user = User.query.filter(User.user_id==user_id).first()
-        if current_user:
-            db.session.delete(current_user)
-            db.session.commit()
-            return 200, "OK"
+        if user.role_id==3:
+            try:
+                user_id = int(request.get_json()['user_id'])
+            except:
+                abort(400, 'user_id must exist and should be integer')
+            current_user = User.query.filter(User.user_id==user_id).first()
+            if current_user:
+                db.session.delete(current_user)
+                db.session.commit()
+                return jsonify({'message':'User deleted successfully'})
+            else:
+                abort(400, 'No such user_id exists')
         else:
-            abort(400, 'No such user_id exists')
+            abort(403, message="Unauthorized")
     @token_required
     def patch(user,self):
         args=request.get_json(force=True)
