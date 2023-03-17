@@ -257,6 +257,7 @@ class FAQApi(Resource):
             d['is_open'] = q.ticket.is_open
             d['is_offensive'] = q.ticket.is_offensive
             d['is_FAQ'] = q.ticket.is_FAQ
+            d['rating'] = q.ticket.rating
             # d['responses'] = []
             # responses = q.ticket.responses
             # if responses:
@@ -268,7 +269,7 @@ class FAQApi(Resource):
             #         d2['response'] = response.response
             #         d['responses'].append(d2)
             result.append(d)
-        return jsonify(result)
+        return jsonify({"data": result})
 
     @token_required
     def post(user, self):

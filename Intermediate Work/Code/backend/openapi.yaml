@@ -11,6 +11,8 @@ tags:
     description: Endpoint to create, read, delete, and update Users
   - name: TicketAPI
     description: Endpoint to create, read, delete, and update Tickets
+  - name: FAQApi
+    description: Endpoint to create, read, delete, and update FAQ Items
   - name: ResponseAPI_by_response_id
     description: API for Responses by response ID
   - name: ResponseAPI_by_user
@@ -289,8 +291,8 @@ paths:
             schema:
               allOf:
                 - $ref: "#/definitions/Ticket"
-                - type: object
-                - properties: 
+              type: object
+              properties: 
                     ticket_id: 
                       type: integer
                       example: 1
@@ -381,6 +383,42 @@ paths:
                     type: string
                     example: "No such ticket_id exists for the user"      
   
+  /api/faq:
+    get:
+      security: 
+        - secret_authtoken: []
+      tags:
+        - FAQApi
+      summary: Retreives all the tickets that have been suggested for the FAQ section
+      description: Retreives all the tickets that have been suggested for the FAQ section
+      operationId: getFAQApi
+      responses:
+        '200':
+          description: "Retreived all tickets successfully"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: 
+                    type: array
+                    items: 
+                        allOf:
+                          - $ref: "#/components/schemas/Ticket"
+                          - $ref: "#/definitions/FAQ"
+
+        '403':
+          description: Unauthorized User
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized"
+
+
   
   /api/respResp:
     post:
@@ -872,6 +910,21 @@ definitions:
           example: false
           description: "true if a support agent has flagged this post, false otherwise"
 
+  FAQ:
+    required:
+      - category
+      - is_approved
+    type: object
+    properties:
+      category:
+          type: string
+          example: "operational"
+          description: "Different FAQ Categories"
+      is_approved: 
+        type: boolean
+        example : false
+        description: "true if approved by admin/manager to add to FAQ, false otherwise"
+
 
 components:
   schemas:
@@ -915,7 +968,29 @@ components:
           type: integer
           description: "Rating of the response to the ticket"
           example: 5
-        
+
+    Category:
+      required:
+        - category
+      type: object
+      properties:
+        category:
+          type: string
+          example: "operational"
+          description: "Different FAQ Categories"
+    
+    FAQ:
+      required:
+        - ticket_id 
+      allOf:
+        - $ref: "#/definitions/FAQ"
+      type: object
+      properties:
+        ticket_id:
+          type: integer
+          description: "Internal Ticket ID assigned to each Ticket" 
+          example: 1
+
     Flagged_Post:
       required:
         - ticket_id
