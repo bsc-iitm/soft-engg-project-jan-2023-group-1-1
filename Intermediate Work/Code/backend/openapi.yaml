@@ -451,6 +451,58 @@ paths:
                   message:
                     type: string
                     example: "ticket_id is required and should be integer"
+    patch:
+      security: 
+        - secret_authtoken: []
+      tags:
+        - FAQApi
+      summary: Update an item in the FAQ Schema
+      description: Update an item in the FAQ Schema
+      operationId: patchFAQApi
+      requestBody: 
+        content:
+          application/json:
+            schema:
+              required:
+                - ticket_id
+              allOf:
+                - $ref: "#/definitions/FAQ"
+              type: object
+              properties:
+                ticket_id:
+                  type: integer
+                  example: 1
+      responses:
+        '200':
+          description: "FAQ item updated successfully"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: 
+                    type: string
+                    example: "FAQ item updated successfully"
+        '403':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized"
+        '400':
+          description: "Bad Request. Error in updating ticket. See message"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "ticket_id is required and should be integer"
   
   /api/respResp:
     post:
@@ -943,9 +995,6 @@ definitions:
           description: "true if a support agent has flagged this post, false otherwise"
 
   FAQ:
-    required:
-      - category
-      - is_approved
     type: object
     properties:
       category:
@@ -1013,7 +1062,9 @@ components:
     
     FAQ:
       required:
+        - cateogory
         - ticket_id 
+        - is_approved
       allOf:
         - $ref: "#/definitions/FAQ"
       type: object
