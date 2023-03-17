@@ -178,7 +178,7 @@ paths:
                   data: 
                     type: array
                     items: 
-                      $ref: '#/definitions/User'
+                      $ref: '#/components/schemas/User_part'
         '403':
           description: Unauthorized User
           content:
@@ -389,7 +389,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/definitions/Ticket"
+              $ref: "#/components/schemas/Ticket_part"
       responses:
         '200':
           description: "Ticket created successfully"
@@ -424,7 +424,7 @@ paths:
           application/json:
             schema:
               allOf:
-                - $ref: "#/definitions/Ticket"
+                - $ref: "#/components/schemas/Ticket_part"
               type: object
               properties: 
                     ticket_id: 
@@ -539,7 +539,7 @@ paths:
                     items: 
                         allOf:
                           - $ref: "#/components/schemas/Ticket"
-                          - $ref: "#/definitions/FAQ"
+                          - $ref: "#/components/schemas/FAQ_part"
 
     post:
       security: 
@@ -600,7 +600,7 @@ paths:
               required:
                 - ticket_id
               allOf:
-                - $ref: "#/definitions/FAQ"
+                - $ref: "#/components/schemas/FAQ_part"
               type: object
               properties:
                 ticket_id:
@@ -1104,9 +1104,9 @@ paths:
       security:
         - secret_authtoken: []
   /api/search:
-    security:
-        - secret_authtoken: []
     post:
+      security:
+        - secret_authtoken: []
       tags:
         - SearchAPI
       summary: Retreive similar queries (tickets)
@@ -1146,15 +1146,17 @@ paths:
                     type: string
                     example: "Unauthorized"
 
-definitions:
-  User:
-    required:
+components:
+
+  schemas:
+    User_part:
+      required:
         - user_id
         - user_name
         - email_id
         - role_id
-    type: object
-    properties:
+      type: object
+      properties:
         user_id:
           type: integer
           description: "Internal User ID assigned to each user" 
@@ -1171,18 +1173,30 @@ definitions:
           type: integer
           description: "Internal Role ID assigned based on the type of user (student, admin, manager, support agent)"
           example: 1
-
-  Ticket:
-    required:
-      - title
-      - description
-      - number_of_upvotes
-      - is_read
-      - is_open
-      - is_offensive
-      - is_FAQ
-    type: object
-    properties:
+    User:
+      required:
+        - password
+      allOf:
+        - $ref: "#/components/schemas/User_part"
+      type: object
+      properties:
+        password:
+          type: string
+          description: "Password for logging in and authenticating users"
+          example: "password12345"
+      xml:
+        name: User
+    Ticket_part:
+      required:
+        - title
+        - description
+        - number_of_upvotes
+        - is_read
+        - is_open
+        - is_offensive
+        - is_FAQ
+      type: object
+      properties:
         title:
           type: string
           description: "Title of the ticket created by the user"
@@ -1211,43 +1225,13 @@ definitions:
           type: boolean
           example: false
           description: "true if a support agent has flagged this post, false otherwise"
-
-  FAQ:
-    type: object
-    properties:
-      category:
-          type: string
-          example: "operational"
-          description: "Different FAQ Categories"
-      is_approved: 
-        type: boolean
-        example : false
-        description: "true if approved by admin/manager to add to FAQ, false otherwise"
-
-
-components:
-  schemas:
-    User:
-      required:
-        - password
-      allOf:
-        - $ref: "#/definitions/User"
-      type: object
-      properties:
-        password:
-          type: string
-          description: "Password for logging in and authenticating users"
-          example: "password12345"
-      xml:
-        name: User
-    
     Ticket:
       required:
         - creation_date
         - ticket_id
         - creator_id
       allOf:
-        - $ref: "#/definitions/Ticket"
+        - $ref: "#/components/schemas/Ticket_part"
       type: object
       properties:
         creation_date: 
@@ -1277,14 +1261,24 @@ components:
           type: string
           example: "operational"
           description: "Different FAQ Categories"
-    
+    FAQ_part:
+      type: object
+      properties:
+        category:
+          type: string
+          example: "operational"
+          description: "Different FAQ Categories"
+        is_approved: 
+          type: boolean
+          example : false
+          description: "true if approved by admin/manager to add to FAQ, false otherwise"
     FAQ:
       required:
         - cateogory
         - ticket_id 
         - is_approved
       allOf:
-        - $ref: "#/definitions/FAQ"
+        - $ref: "#/components/schemas/FAQ_part"
       type: object
       properties:
         ticket_id:
