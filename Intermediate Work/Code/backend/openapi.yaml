@@ -503,7 +503,48 @@ paths:
                   message:
                     type: string
                     example: "ticket_id is required and should be integer"
-  
+
+    delete:
+      security: 
+        - secret_authtoken: []
+      tags:
+        - FAQApi
+      summary: "Delete a FAQ Item"
+      description: "Delete a FAQ Item by ticket_id"
+      operationId: deleteFAQApi
+      requestBody: 
+        content: 
+          application/json:
+            schema:
+              required:
+                - ticket_id
+              type: object
+              properties: 
+                ticket_id:
+                  type: integer
+                  example: 1          
+      responses:
+        '200':
+          description: "FAQ item deleted successfully"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: 
+                    type: string
+                    example: "FAQ item deleted successfully"
+
+        '400':
+          description: "Bad Request. Error in deleting FAQ item. See message"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "ticket_id does not exist"      
   /api/respResp:
     post:
       tags:
