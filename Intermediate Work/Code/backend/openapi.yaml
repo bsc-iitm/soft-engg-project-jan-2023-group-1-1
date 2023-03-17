@@ -23,6 +23,8 @@ tags:
     description: Access the resolution times for queries.
   - name: flaggedPostAPI
     description: Access all the flagged Posts.
+  - name: SearchAPI
+    description: Endpoint to retreive similar tickets based on query
 paths:
   /api/user:
     get:
@@ -969,6 +971,49 @@ paths:
                       example: "You are not authorized to access this feature."
       security:
         - secret_authtoken: []
+  /api/search:
+    security:
+        - secret_authtoken: []
+    post:
+      tags:
+        - SearchAPI
+      summary: Retreive similar queries (tickets)
+      description: Retreive similar queries (tickets)
+      operationId: postSearchAPI
+      requestBody:
+        content:
+          application/json:
+            schema:
+              required:
+                - query
+              type: object
+              properties:
+                query:
+                  type: string
+                  example: "ID Card Error"
+      responses:
+        '200':
+          description: Similar queries (tickets) retreived succesfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: 
+                    type: array
+                    items: 
+                      $ref: '#/components/schemas/Ticket'
+        '403':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized"
+
 definitions:
   User:
     required:
