@@ -630,8 +630,7 @@ class TicketAll(Resource):
                 pass
             db.session.commit()
             return jsonify({"message": "success"})
-        
-import datetime
+
 class getResolutionTimes(Resource):
     #API to get resolution times.
     #Supports getting resolution times of a single ticket or multiple tickets all at once.
@@ -659,8 +658,8 @@ class getResolutionTimes(Resource):
                     except:
                         abort(404, message = "No such ticket exists by the given ticket ID.")
                     if isinstance(ticket.creation_date, str):
-                        d["creation_time"] = datetime.datetime.strptime(ticket.creation_date, '%Y-%m-%d %H:%M:%S.%f')
-                    elif isinstance(ticket.creation_date, datetime.datetime):
+                        d["creation_time"] = datetime.strptime(ticket.creation_date, '%Y-%m-%d %H:%M:%S.%f')
+                    elif isinstance(ticket.creation_date, datetime):
                         d["creation_time"] = ticket.creation_date
                     else:
                         abort(403, message = "The ticket object timestamp isn't in either string or datetime format.")
@@ -670,7 +669,7 @@ class getResolutionTimes(Resource):
                             responses = list(responses)
                             response_times = []
                             for thing in responses:
-                                if isinstance(thing.response_timestamp, datetime.datetime):
+                                if isinstance(thing.response_timestamp, datetime):
                                     #print("Here 1")
                                     response_times.append(thing.response_timestamp)
                                 elif isinstance(thing.response_timestamp, str):
@@ -704,8 +703,8 @@ class getResolutionTimes(Resource):
                 except:
                     abort(404, message = "No such ticket exists by the given ticket ID.")
                 if isinstance(ticket.creation_date, str):
-                    d["creation_time"] = datetime.datetime.strptime(ticket.creation_date, '%Y-%m-%d %H:%M:%S.%f')
-                elif isinstance(ticket.creation_date, datetime.datetime):
+                    d["creation_time"] = datetime.strptime(ticket.creation_date, '%Y-%m-%d %H:%M:%S.%f')
+                elif isinstance(ticket.creation_date, datetime):
                     d["creation_time"] = ticket.creation_date
                 else:
                     abort(403, message = "The ticket object timestamp isn't in either string or datetime format.")
@@ -717,12 +716,12 @@ class getResolutionTimes(Resource):
                         responses = list(responses)
                         response_times = []
                         for thing in responses:
-                            if isinstance(thing.response_timestamp, datetime.datetime):
+                            if isinstance(thing.response_timestamp, datetime):
                                 #print("Here 1")
                                 response_times.append(thing.response_timestamp)
                             elif isinstance(thing.response_timestamp, str):
                                 #print("Here 2")
-                                response_times.append(datetime.datetime.strptime(thing.response_timestamp,'%Y-%m-%d %H:%M:%S.%f'))
+                                response_times.append(datetime.strptime(thing.response_timestamp,'%Y-%m-%d %H:%M:%S.%f'))
                             else:
                                 abort(403, message = "The response object timestamp isn't in either string or datetime format.")
                         #print("Here3")
