@@ -407,8 +407,32 @@ paths:
                           - $ref: "#/components/schemas/Ticket"
                           - $ref: "#/definitions/FAQ"
 
+    post:
+      security: 
+        - secret_authtoken: []
+      tags:
+        - FAQApi
+      summary: Add a new ticket to FAQ Schema
+      description: Add a new ticket to FAQ Schema
+      operationId: postFAQApi
+      requestBody: 
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FAQ"
+      responses:
+        '200':
+          description: "FAQ item added successfully"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: 
+                    type: string
+                    example: "FAQ item added successfully"
         '403':
-          description: Unauthorized User
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -417,8 +441,16 @@ paths:
                   message:
                     type: string
                     example: "Unauthorized"
-
-
+        '400':
+          description: "Bad Request. Error in updating ticket. See message"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "ticket_id is required and should be integer"
   
   /api/respResp:
     post:
