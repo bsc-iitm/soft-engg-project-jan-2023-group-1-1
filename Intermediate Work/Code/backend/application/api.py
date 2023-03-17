@@ -7,6 +7,9 @@ from application.models import token_required, db
 from application.workers import celery
 from celery import chain
 from application.tasks import send_email, response_notification
+from datetime import datetime, timedelta
+import jwt
+from .config import Config
 
 class TicketAPI(Resource):
     @token_required
@@ -825,3 +828,26 @@ class flaggedPostAPI(Resource):
             return jsonify({"status": "success"})
         else:
             abort(404, message = "You are not authorized to access this feature.")
+            
+class Login(Resource):
+    def post(self):
+        if request.is_json:
+            email = request.json["email"]
+            password = request.json["password"]
+        else:
+            email = request.form["email"]
+            password = request.form["password"]
+        test = User.query.filter_by(email_id=email).first()
+        # print(test)
+        if (test is None):
+            abort(409,message="User does not exist")
+        elif (test.password == password):
+            token = jwt.encode({
+                'user_id': test.user_id,
+                'exp': datetime.utcnow() + timedelta(minutes=80)
+            }, Config.SECRET_KEY, algorithm="HS256")
+            # access_token = create_access_token(identity=email)
+            # print(token)
+            return jsonify({"message":"Login Succeeded!", "token":token,"user_id":test.user_id})
+        else:
+            abort(401, message="Bad Email or Password")

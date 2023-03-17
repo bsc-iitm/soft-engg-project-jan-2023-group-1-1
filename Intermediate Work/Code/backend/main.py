@@ -1,6 +1,6 @@
 from application import app, api, celery
 
-from application.api import TicketAPI , UserAPI, FAQApi, ResponseAPI_by_ticket, ResponseAPI_by_response_id, ResponseAPI_by_user,TicketAll, getResolutionTimes, flaggedPostAPI, getResponseAPI_by_ticket
+from application.api import TicketAPI , UserAPI, FAQApi, ResponseAPI_by_ticket, ResponseAPI_by_response_id, ResponseAPI_by_user,TicketAll, getResolutionTimes, flaggedPostAPI, getResponseAPI_by_ticket,Login
 api.add_resource(TicketAPI, '/api/ticket')
 api.add_resource(UserAPI,'/api/user')
 api.add_resource(FAQApi, '/api/faq')
@@ -11,7 +11,7 @@ api.add_resource(TicketAll, '/api/ticketAll') #For getting all tickets
 api.add_resource(getResolutionTimes, '/api/getResolutionTimes') # For getting resolution times of support agents, only accessible to managers.
 api.add_resource(flaggedPostAPI, '/api/flaggedPosts') #For getting the flagged posts.
 api.add_resource(getResponseAPI_by_ticket,'/api/getResponseAPI_by_ticket') #Only for getting the responses by ticket ID
-
+api.add_resource(Login,'/login')
 from application.routes import *
 if __name__ == '__main__':
   # Run the Flask app
