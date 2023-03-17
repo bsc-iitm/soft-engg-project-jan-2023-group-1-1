@@ -178,7 +178,24 @@ paths:
                   data: 
                     type: array
                     items: 
-                      $ref: '#/components/schemas/User_part'
+                      type: object
+                      properties:
+                          user_id:
+                            type: integer
+                            description: "Internal User ID assigned to each user" 
+                            example: 1
+                          user_name:
+                            type: string
+                            description: "username corresponding to the user"
+                            example: "myusername"
+                          email_id: 
+                            type: string
+                            description: "email address corresponding to the user"
+                            example: "abc@example.com"
+                          role_id:
+                            type: integer
+                            description: "Internal Role ID assigned based on the type of user (student, admin, manager, support agent)"
+                            example: 1
         '403':
           description: Unauthorized User
           content:
@@ -295,7 +312,15 @@ paths:
                   message:
                     type: string
                     example: "user_id must exist and should be integer"
+  /api/user/{user_id}:
     delete:
+      parameters:
+        - name: user_id
+          in: path
+          description: User ID
+          required: true
+          schema:
+            type: integer
       security: 
         - secret_authtoken: []
       tags:
@@ -303,17 +328,6 @@ paths:
       summary: "Delete Particular user"
       description: "Delete user by user_id"
       operationId: deleteUserAPI
-      requestBody: 
-        content: 
-          application/json:
-            schema:
-              required:
-                - user_id
-              type: object
-              properties: 
-                user_id:
-                  type: integer
-                  example: 1          
       responses:
         '200':
           description: "User deleted successfully"
@@ -386,10 +400,7 @@ paths:
       description: " Add a new Ticket" 
       operationId: postTicketAPI
       requestBody: 
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Ticket_part"
+        $ref: "#/components/requestBodies/Ticket_part"
       responses:
         '200':
           description: "Ticket created successfully"
@@ -423,16 +434,42 @@ paths:
         content:
           application/json:
             schema:
-              allOf:
-                - $ref: "#/components/schemas/Ticket_part"
               type: object
-              properties: 
-                    ticket_id: 
-                      type: integer
-                      example: 1
-                    rating:
-                      type: integer
-                      example: 2
+              properties:
+                title:
+                  type: string
+                  description: "Title of the ticket created by the user"
+                  example: "ID Card Address Error"
+                description: 
+                  type: string
+                  description: "Ticket description"
+                  example: "The address on my ID card is incorrect"
+                number_of_upvotes:
+                  type: integer
+                  description: "Number of time the ticket has been upvoted"
+                  example: 10
+                is_read: 
+                  type: boolean
+                  example: true
+                  description: "true if ticket has been read by a support agent. false otherwise"
+                is_open:
+                  type: boolean
+                  example: false
+                  description: "true if ticket is still unresolved. false if resolved"
+                is_FAQ: 
+                  type: boolean
+                  example: true
+                  description: "true if ticket has been suggested by support agent to the admin to add to the FAQ. false otherwise"
+                is_offensive:
+                  type: boolean
+                  example: false
+                  description: "true if a support agent has flagged this post, false otherwise"
+                ticket_id: 
+                  type: integer
+                  example: 1
+                rating:
+                  type: integer
+                  example: 2
 
       responses:
         '200':
@@ -475,6 +512,14 @@ paths:
                   message:
                     type: string
                     example: "There is no such ticket by that ID"
+  /api/ticket/{ticket_id}:
+    parameters:
+        - name: ticket_id
+          in: path
+          description: Ticket ID
+          required: true
+          schema:
+            type: integer
     delete:
       security: 
         - secret_authtoken: []
@@ -483,17 +528,6 @@ paths:
       summary: "Delete a Ticket"
       description: "Delete Ticket by ticket_id"
       operationId: deleteTicketAPI
-      requestBody: 
-        content: 
-          application/json:
-            schema:
-              required:
-                - ticket_id
-              type: object
-              properties: 
-                ticket_id:
-                  type: integer
-                  example: 1          
       responses:
         '200':
           description: "Ticket deleted successfully"
@@ -539,7 +573,7 @@ paths:
                     items: 
                         allOf:
                           - $ref: "#/components/schemas/Ticket"
-                          - $ref: "#/components/schemas/FAQ_part"
+                          - $ref: "#/components/schemas/FAQ"
 
     post:
       security: 
@@ -600,12 +634,7 @@ paths:
               required:
                 - ticket_id
               allOf:
-                - $ref: "#/components/schemas/FAQ_part"
-              type: object
-              properties:
-                ticket_id:
-                  type: integer
-                  example: 1
+                - $ref: "#/components/schemas/FAQ"
       responses:
         '200':
           description: "FAQ item updated successfully"
@@ -637,7 +666,14 @@ paths:
                   message:
                     type: string
                     example: "ticket_id is required and should be integer"
-
+  /api/faq/{ticket_id}:
+    parameters:
+        - name: ticket_id
+          in: path
+          description: Ticket ID
+          required: true
+          schema:
+            type: integer
     delete:
       security: 
         - secret_authtoken: []
@@ -646,17 +682,6 @@ paths:
       summary: "Delete a FAQ Item"
       description: "Delete a FAQ Item by ticket_id"
       operationId: deleteFAQApi
-      requestBody: 
-        content: 
-          application/json:
-            schema:
-              required:
-                - ticket_id
-              type: object
-              properties: 
-                ticket_id:
-                  type: integer
-                  example: 1          
       responses:
         '200':
           description: "FAQ item deleted successfully"
@@ -1149,13 +1174,14 @@ paths:
 components:
 
   schemas:
-    User_part:
+
+    User:
       required:
         - user_id
         - user_name
         - email_id
         - role_id
-      type: object
+        - password
       properties:
         user_id:
           type: integer
@@ -1173,20 +1199,14 @@ components:
           type: integer
           description: "Internal Role ID assigned based on the type of user (student, admin, manager, support agent)"
           example: 1
-    User:
-      required:
-        - password
-      allOf:
-        - $ref: "#/components/schemas/User_part"
-      type: object
-      properties:
         password:
           type: string
           description: "Password for logging in and authenticating users"
           example: "password12345"
       xml:
         name: User
-    Ticket_part:
+        
+    Ticket:
       required:
         - title
         - description
@@ -1195,6 +1215,11 @@ components:
         - is_open
         - is_offensive
         - is_FAQ
+        - creation_date
+        - ticket_id
+        - creator_id
+      allOf:
+        - $ref: "#/components/requestBodies/Ticket_part"
       type: object
       properties:
         title:
@@ -1225,15 +1250,6 @@ components:
           type: boolean
           example: false
           description: "true if a support agent has flagged this post, false otherwise"
-    Ticket:
-      required:
-        - creation_date
-        - ticket_id
-        - creator_id
-      allOf:
-        - $ref: "#/components/schemas/Ticket_part"
-      type: object
-      properties:
         creation_date: 
           type: string
           format: date time
@@ -1261,26 +1277,20 @@ components:
           type: string
           example: "operational"
           description: "Different FAQ Categories"
-    FAQ_part:
-      type: object
-      properties:
-        category:
-          type: string
-          example: "operational"
-          description: "Different FAQ Categories"
-        is_approved: 
-          type: boolean
-          example : false
-          description: "true if approved by admin/manager to add to FAQ, false otherwise"
+        
     FAQ:
       required:
         - cateogory
         - ticket_id 
         - is_approved
       allOf:
-        - $ref: "#/components/schemas/FAQ_part"
+        - $ref: "#/components/schemas/Category"
       type: object
       properties:
+        is_approved: 
+          type: boolean
+          example : false
+          description: "true if approved by admin/manager to add to FAQ, false otherwise"
         ticket_id:
           type: integer
           description: "Internal Ticket ID assigned to each Ticket" 
@@ -1346,3 +1356,39 @@ components:
       type: apiKey
       name: secret_authtoken
       in: header
+      
+  requestBodies:
+    Ticket_part:
+      content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: "Title of the ticket created by the user"
+                  example: "ID Card Address Error"
+                description: 
+                  type: string
+                  description: "Ticket description"
+                  example: "The address on my ID card is incorrect"
+                number_of_upvotes:
+                  type: integer
+                  description: "Number of time the ticket has been upvoted"
+                  example: 10
+                is_read: 
+                  type: boolean
+                  example: true
+                  description: "true if ticket has been read by a support agent. false otherwise"
+                is_open:
+                  type: boolean
+                  example: false
+                  description: "true if ticket is still unresolved. false if resolved"
+                is_FAQ: 
+                  type: boolean
+                  example: true
+                  description: "true if ticket has been suggested by support agent to the admin to add to the FAQ. false otherwise"
+                is_offensive:
+                  type: boolean
+                  example: false
+                  description: "true if a support agent has flagged this post, false otherwise"
