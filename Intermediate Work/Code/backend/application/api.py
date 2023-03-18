@@ -688,9 +688,9 @@ class getResolutionTimes(Resource):
                             d["days"] = d["resolution_time_datetime_format"].days
                             d["seconds"] = d["resolution_time_datetime_format"].seconds
                             d["microseconds"] = d["resolution_time_datetime_format"].microseconds
-                            d["response_time"] = str(d["response_time"])
-                            d["resolution_time_datetime_format"] = str(d["resolution_time_datetime_format"])
-                            d["creation_time"] = str(d["creation_time"])
+                            d["response_time"] = d["response_time"]
+                            d["resolution_time_datetime_format"] = d["resolution_time_datetime_format"]
+                            d["creation_time"] = d["creation_time"]
                             d["ticket_id"] = item
                             data.append(d)
                         else:
@@ -737,9 +737,9 @@ class getResolutionTimes(Resource):
                         d["days"] = d["resolution_time_datetime_format"].days
                         d["seconds"] = d["resolution_time_datetime_format"].seconds
                         d["microseconds"] = d["resolution_time_datetime_format"].microseconds
-                        d["response_time"] = str(d["response_time"])
-                        d["resolution_time_datetime_format"] = str(d["resolution_time_datetime_format"])
-                        d["creation_time"] = str(d["creation_time"])
+                        d["response_time"] = d["response_time"]
+                        d["resolution_time_datetime_format"] = d["resolution_time_datetime_format"]
+                        d["creation_time"] = d["creation_time"]
                         d["ticket_id"] = ticket_id
                         return jsonify({"data": d, "status": "success"})
                     else:
