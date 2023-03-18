@@ -28,6 +28,7 @@ def str_to_int_roles(role):
         raise invalidRoleException
     return res
 
+@celery.task
 def add_users_import(csv_file_path):
     """
     Adds users as a batch job wherein a CSV file is passed from the frontend and then operated upon by the backend.

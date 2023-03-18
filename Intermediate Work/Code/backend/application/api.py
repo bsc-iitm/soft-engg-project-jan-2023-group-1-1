@@ -853,3 +853,15 @@ class Login(Resource):
             return jsonify({"message":"Login Succeeded!", "token":token,"user_id":test.user_id})
         else:
             abort(401, message="Bad Email or Password")
+            
+from application.utils import add_users_import    
+class ImportResourceUser(Resource):
+    @token_required
+    def post(user,self):
+        file=request.files['file']
+        if(user.role_id==3):
+            add_users_import.delay(file)
+            return jsonify({"message":"File uploaded successfully"})
+        else:
+            abort(401,message="You are not authorized to access this feature")
+            
