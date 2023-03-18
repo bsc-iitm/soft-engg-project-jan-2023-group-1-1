@@ -29,6 +29,8 @@ tags:
     description: Endpoint to retreive similar tickets based on query
   - name: getResponseAPI_by_ticket
     description: get responses by ticket ID
+  - name: importUsersAPI
+    description: Endpoint to batch import users
 paths:
   /api/getResponseAPI_by_ticket:
     post:
@@ -1170,6 +1172,39 @@ paths:
                   message:
                     type: string
                     example: "Unauthorized"
+  
+  /api/importUsers:
+     post:
+      security:
+        - secret_authtoken: []
+      tags:
+        - importUsersAPI
+      summary: "Batch Import New Users"
+      description: " Batch Import New Usersr" 
+      operationId: postimportUsersAPI
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                UploadedFile:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Job added for further processing. User will receive an email notification upon completion
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+        '400':
+          description: Error
+      
 
 components:
 
