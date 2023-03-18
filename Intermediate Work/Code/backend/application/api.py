@@ -123,7 +123,7 @@ class TicketAPI(Resource):
             except:
                 pass  
             db.session.commit()
-            return jsonify({"message": "success"})
+            return jsonify({"message": "Ticket updated successfully"})
         
         else:
             abort(403,message= "You are not authorized to access this!")
