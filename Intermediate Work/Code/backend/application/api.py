@@ -689,7 +689,7 @@ class getResolutionTimes(Resource):
                             d["seconds"] = d["resolution_time_datetime_format"].seconds
                             d["microseconds"] = d["resolution_time_datetime_format"].microseconds
                             d["response_time"] = d["response_time"]
-                            d["resolution_time_datetime_format"] = d["resolution_time_datetime_format"]
+                            d["resolution_time_datetime_format"] = str(d["resolution_time_datetime_format"])
                             d["creation_time"] = d["creation_time"]
                             d["ticket_id"] = item
                             data.append(d)
@@ -716,8 +716,8 @@ class getResolutionTimes(Resource):
                 responses = Response.query.filter_by(ticket_id = ticket_id).all()
                 try:
                     #print("Inside try")
-                    if not(ticket.is_open):
-                        #print("Here")
+                    if ticket.is_open == False:
+                        print("Here")
                         responses = list(responses)
                         response_times = []
                         for thing in responses:
@@ -738,7 +738,7 @@ class getResolutionTimes(Resource):
                         d["seconds"] = d["resolution_time_datetime_format"].seconds
                         d["microseconds"] = d["resolution_time_datetime_format"].microseconds
                         d["response_time"] = d["response_time"]
-                        d["resolution_time_datetime_format"] = d["resolution_time_datetime_format"]
+                        d["resolution_time_datetime_format"] = str(d["resolution_time_datetime_format"])
                         d["creation_time"] = d["creation_time"]
                         d["ticket_id"] = ticket_id
                         return jsonify({"data": d, "status": "success"})
