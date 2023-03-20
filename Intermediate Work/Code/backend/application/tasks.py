@@ -53,7 +53,9 @@ def poor_resolution_time():
         html+= '</ol> </body> </html>'
         send_email.s((html, eid, subject)).apply_async()
 
-    return "OK"
+        return "Email sent with details of agents with poor resolution time"
+    else:
+        return "All Agents have have a resolution time less than 48 hours in the past 30 days "
 
 @celery.task()
 def unanswered_ticket_notification():
@@ -127,4 +129,4 @@ def send_email(email):
             'html': html,
         }
     )
-    return 200
+    return a.status_code
