@@ -93,21 +93,21 @@ def unanswered_ticket_notification():
     return "All Tickets Answered"
                             
 @celery.task()
-def response_notification(tid, rid):
-    ticket_obj = db.session.query(Ticket).filter(Ticket.ticket_id==tid).first()
-    response_obj = db.session.query(Response).filter(Response.response_id==rid).first()
-    creator_obj = db.session.query(User).filter(User.user_id==ticket_obj.creator_id).first()
-    responder_obj = db.session.query(User).filter(User.user_id==response_obj.responder_id).first()
-    subject = f'There is a new response to your ticket {ticket_obj.title}'
-    eid = creator_obj.email_id
+def response_notification(ticket_obj, response_obj):
+    # # ticket_obj = db.session.query(Ticket).filter(Ticket.ticket_id==tid).first()
+    # # response_obj = db.session.query(Response).filter(Response.response_id==rid).first()
+    # creator_obj = db.session.query(User).filter(User.user_id==ticket_obj.creator_id).first()
+    # responder_obj = db.session.query(User).filter(User.user_id==response_obj.responder_id).first()
+    subject = f'There is a new response to your ticket {ticket_obj["title"]}'
+    eid = ticket_obj["creator_email"]
     html = f'''
         <html> 
             <head>
-                {responder_obj.user_name} has posted a respone to your ticket {ticket_obj.title}
+                {response_obj["responder_uname"]} has posted a respone to your ticket {ticket_obj["title"]}
             </head>
             <body>
                 <blockquote>
-                {response_obj.response}
+                {response_obj["response"]}
                 </blockquote>
             </body>
         </html>

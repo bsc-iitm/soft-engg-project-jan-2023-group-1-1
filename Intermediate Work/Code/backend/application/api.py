@@ -416,7 +416,9 @@ class ResponseAPI_by_ticket(Resource):
                 db.session.add(response_obj)
                 db.session.commit()
                 if user.role_id == 2 or (user.role_id==1 and user.user_id != ticket_obj.creator_id):
-                    send_notification = chain(response_notification.s(tid = ticket_obj.ticket_id, rid = response_obj.response_id), send_email.s()).apply_async()
+                    tk = {'title': ticket_obj.title, 'ticket_id': ticket_obj.ticket_id, 'creator_id': ticket_obj.creator_id, 'creator_email': ticket_obj.creator.email_id}
+                    rp = {'responder_id': response_obj.responder_id, 'response': response_obj.response, 'response_id': response_obj.response_id, 'responder_uname': response_obj.responder.user_name}
+                    send_notification = chain(response_notification.s(ticket_obj = tk, response_obj=rp), send_email.s()).apply_async()
                 return jsonify({"status": "success"})
             else:
                 abort(404, message =

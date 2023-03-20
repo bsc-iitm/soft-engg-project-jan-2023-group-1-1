@@ -17,6 +17,8 @@ class User(db.Model):
     password=db.Column(db.String(100),unique=True,nullable=False)
     email_id=db.Column(db.String(100),unique=True,nullable=False)
     role_id=db.Column(db.Integer,nullable=False) #Role ID for students is 1, for Support Agents is 2, Admins is 3, Manager is 4.
+    responses = db.relationship('Response', back_populates='responder', lazy='subquery')
+    tickets = db.relationship('Ticket',  back_populates='creator', lazy='subquery')
 
 class Student(db.Model):
     user_id=db.Column(db.Integer, db.ForeignKey('user.user_id'),primary_key=True)
@@ -41,6 +43,7 @@ class Response(db.Model):
     responder_id = db.Column(db.Integer, db.ForeignKey('user.user_id'))
     response_timestamp = db.Column(db.DateTime, nullable=False, default=datetime.utcnow())
     parent_list = db.relationship('Ticket',back_populates='responses', lazy='subquery')
+    responder = db.relationship('User', back_populates='responses', lazy='subquery')
 
 class Ticket(db.Model):
     ticket_id=db.Column(db.Integer,primary_key=True,autoincrement=True)
@@ -54,6 +57,7 @@ class Ticket(db.Model):
     is_offensive=db.Column(db.Boolean,nullable=False)
     is_FAQ=db.Column(db.Boolean,nullable=False)
     responses = db.relationship('Response', back_populates='parent_list', lazy='subquery')
+    creator = db.relationship('User', back_populates='tickets', lazy='subquery')
     rating = db.Column(db.Integer)
 
 class Category(db.Model):
