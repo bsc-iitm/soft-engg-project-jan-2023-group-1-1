@@ -8,12 +8,12 @@ from application.tasks import celery
 from celery import chain
 
 #Send Email test case when html, subject and email id is correct
-# def test_send_email_all_parameters_okay():
-#     html = '<html> <p> Hi! </p> </html>'
-#     eid = 'calyx.keadon@dollstore.org'
-#     subject = 'This is a subject'
-#     email = (html,eid,subject)
-#     assert send_email.s(email).apply_async().get() == 200
+def test_send_email_all_parameters_okay():
+    html = '<html> <p> Hi! </p> </html>'
+    eid = 'calyx.keadon@dollstore.org'
+    subject = 'This is a subject'
+    email = (html,eid,subject)
+    assert send_email.s(email).apply_async().get() == 200
 
 # Email variable should be a tuple of the form (html, email_address, subject)
 def test_send_email_improper_tuple_supplied():
