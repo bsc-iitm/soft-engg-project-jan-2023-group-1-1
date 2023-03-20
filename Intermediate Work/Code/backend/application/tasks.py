@@ -112,7 +112,7 @@ def response_notification(tid, rid):
             </body>
         </html>
     '''
-    return html, eid, subject
+    return (html, eid, subject)
 
 @celery.task()
 def send_email(email):
