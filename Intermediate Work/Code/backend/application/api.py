@@ -130,8 +130,9 @@ class TicketAPI(Resource):
         
     @token_required
     def delete(user, self):
+        data=request.get_json(force=True)
         try:
-            ticket_id = int(request.get_json()['ticket_id'])
+            ticket_id = int(data['ticket_id'])
         except:
             abort(400, 'ticket_id must exist and should be integer')
         current_ticket = db.session.query(Ticket).filter(Ticket.ticket_id==ticket_id,Ticket.creator_id==user.user_id).first()
