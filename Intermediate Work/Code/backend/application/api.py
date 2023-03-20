@@ -10,6 +10,8 @@ from application.tasks import send_email, response_notification
 from datetime import datetime, timedelta
 import jwt
 from .config import Config
+from werkzeug.exceptions import HTTPException
+
 
 class TicketAPI(Resource):
     @token_required
@@ -297,6 +299,9 @@ class FAQApi(Resource):
 
             if not isinstance(is_app, bool):
                 abort(400, message="is_approved must be boolean")
+            
+            if db.session.query(FAQ).filter(FAQ.ticket_id== tid).first():
+                abort(400, message="ticket already in FAQ")
 
             newFAQ = FAQ(ticket_id = tid, category=cat, is_approved=is_app)
             db.session.add(newFAQ)
@@ -324,20 +329,22 @@ class FAQApi(Resource):
 
             try:
                 cat = data['category']
-                if db.session.query(Category).filter(Category.category==cat).first() is None:
+                if not db.session.query(Category).filter(Category.category==cat).first():
                     abort(400, message="category does not exist")
                 else:
                     current_ticket.category = cat
-            except:
-               pass
+            except Exception as e:
+               if isinstance(e, HTTPException):
+                   raise e
             try:
                 is_app = data['is_approved']
                 if not isinstance(is_app, bool):
                     abort(400, message="is_approved must be boolean")
                 else:
                     current_ticket.is_approved = is_app
-            except:
-               pass
+            except Exception as e:
+               if isinstance(e, HTTPException):
+                   raise e
                  
             db.session.commit()
             return jsonify({'message': "FAQ item updated successfully"})
@@ -346,13 +353,9 @@ class FAQApi(Resource):
             abort(403, message="Unauthorized")
     
     @token_required
-    def delete(user, self):
+    def delete(user, self, ticket_id):
         if user.role_id==3:
-            data = request.get_json()
-            try:
-                tid = int(data['ticket_id'])
-            except:
-                abort(400, message="ticket_id is required and should be integer")
+            tid = ticket_id
             
             if not db.session.query(Ticket).filter(Ticket.ticket_id==tid).first():
                 abort(400, message="ticket_id does not exist")

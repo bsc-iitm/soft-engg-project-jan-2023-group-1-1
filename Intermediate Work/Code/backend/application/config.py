@@ -38,3 +38,7 @@ class LocalDevelopmentConfig(Config):
         MAILGUN_API_KEY = os.environ['MG_API_KEY']
     except: 
         MAILGUN_API_KEY = 'ABCD'
+
+class UnansweredNotificationSentConfig(LocalDevelopmentConfig):
+    SQLITE_DB_DIR = os.path.join(basedir, "../test/db_instances")
+    SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(SQLITE_DB_DIR, "unansweredticketnotification.sqlite3")
