@@ -129,14 +129,10 @@ class TicketAPI(Resource):
         
         else:
             abort(403,message= "You are not authorized to access this!")
-        
+
+class TicketDelete(Resource):
     @token_required
-    def delete(user, self):
-        data=request.get_json(force=True)
-        try:
-            ticket_id = int(data['ticket_id'])
-        except:
-            abort(400, 'ticket_id must exist and should be integer')
+    def delete(user,self,ticket_id):
         current_ticket = db.session.query(Ticket).filter(Ticket.ticket_id==ticket_id,Ticket.creator_id==user.user_id).first()
         if current_ticket:
             responses = db.session.query(Response).filter(Response.ticket_id==ticket_id).all()
@@ -182,22 +178,7 @@ class UserAPI(Resource):
             return jsonify({'message':'User created successfully'})
         else:
             abort(403,message="You are not authorized to view this page")
-    @token_required
-    def delete(user, self):
-        if user.role_id==3:
-            try:
-                user_id = int(request.get_json()['user_id'])
-            except:
-                abort(400, 'user_id must exist and should be integer')
-            current_user = User.query.filter(User.user_id==user_id).first()
-            if current_user:
-                db.session.delete(current_user)
-                db.session.commit()
-                return jsonify({'message':'User deleted successfully'})
-            else:
-                abort(400, 'No such user_id exists')
-        else:
-            abort(403, message="Unauthorized")
+            
     @token_required
     def patch(user,self):
         args=request.get_json(force=True)
@@ -233,6 +214,19 @@ class UserAPI(Resource):
         db.session.commit()
         return jsonify({'message':'User updated successfully'})
     
+class UserDelete(Resource):
+    @token_required
+    def delete(user,self,user_id):
+        if user.role_id==3:
+            current_user = User.query.filter(User.user_id==user_id).first()
+            if current_user:
+                db.session.delete(current_user)
+                db.session.commit()
+                return jsonify({'message':'User deleted successfully'})
+            else:
+                abort(400, 'No such user_id exists')
+        else:
+            abort(403, message="Unauthorized")
 
 class FAQApi(Resource):
     @token_required
