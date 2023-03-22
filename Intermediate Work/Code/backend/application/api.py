@@ -860,7 +860,7 @@ class ImportResourceUser(Resource):
     def post(user,self):
         file=request.files['file']
         if(user.role_id==3):
-            add_users_import.delay(file)
+            add_users_import.s(data=file, eid=user.email_id).apply_async()
             return jsonify({"message":"File uploaded successfully"})
         else:
             abort(401,message="You are not authorized to access this feature")

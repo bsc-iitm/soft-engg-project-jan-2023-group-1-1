@@ -2,6 +2,7 @@
 from application.models import User
 from application.models import db
 from application.workers import celery
+from application.tasks import send_email
 from celery import chain
 import pandas
 import os
@@ -29,24 +30,29 @@ def str_to_int_roles(role):
     return res
 
 @celery.task
-def add_users_import(csv_file_path):
+def add_users_import(csv_file_path, eid, subject='Error in importing your data'):
     """
     Adds users as a batch job wherein a CSV file is passed from the frontend and then operated upon by the backend.
     csv_file_path is the path to the csv file which has the CSV file of details. Please change it accordingly.
     """
     df = None
     b = None
+    html = '<html>'
     try:
         df = pandas.read_csv(csv_file_path)
     except:
-        print("Your file must have atleast one row of data apart from the columns") #Chirag: Please adjust this error by sending an email for an empty file.
+        html += '<p> Your file must have atleast one row of data apart from the columns </p> </html>'
+        send_email.s((html, eid, subject)).apply_async()
+        return 'File Not Found'
     try:
         b = len(df)
         #print(b)
         if b == 0:
             raise emptyFileException
     except:
-        print("Your file must have ateast one row of data apart from the columns") #Chirag: Please adjust this error by sending an email for an empty file.
+        html += '<p> Your file must have atleast one row of data apart from the columns </p> </html>'
+        send_email.s((html, eid, subject)).apply_async()
+        return 'Invalid Data'
     flag = 0
     for i in range(b):
             row = df.iloc[i]
@@ -54,7 +60,8 @@ def add_users_import(csv_file_path):
             try:
                 email_id = row["email_id"]
             except:
-                print("Please have an 'email_id' column in your csv file") #Chirag: Please adjust this error by sending an email for requiring an email_id column in the.
+                html += "<p> Please have an 'email_id' column in your csv file </p> </html>"
+                send_email.s((html, eid, subject)).apply_async()
                 flag = -1
                 break
             try:
@@ -70,9 +77,13 @@ def add_users_import(csv_file_path):
             db.session.commit()
 
     if flag == 1:
-            print("Either you don't have a 'roles' column in your csv or some roles were not amongst 'student', 'support agent', 'admin', 'manager'. Those not having an appropriate role haven't been added to the database. Rest have been added.")
-            #Chirag: Please adjust this error by sending an email informing the admin about this.
+            html += "<p> Either you don't have a 'roles' column in your csv or some roles were not amongst 'student', 'support agent', 'admin', 'manager'. Those not having an appropriate role haven't been added to the database. Rest have been added. </p> </html>"
+            send_email.s((html, eid, subject)).apply_async()
+            return 'Roles Improperly specified'
     elif flag == -1:
-         pass
+         return 'email_id column not found'
     else:
-            print("All user have been added successfully to the database.")  #Chirag: Please adjust this notification by sending an email informing the admin about this.
+        subject = "Your import job has been successfully processed"
+        html += "<p> All users have been added successfully to the database. </p> </html>"
+        send_email.s((html, eid, subject)).apply_async()
+        return "Success"
