@@ -12,9 +12,9 @@ api = None
 celery = None
 # cache = None
 
-def create_app():
+def create_app(conf=LocalDevelopmentConfig):
     app = Flask(__name__)
-    app.config.from_object(LocalDevelopmentConfig)
+    app.config.from_object(conf)
     db.init_app(app)
     app.app_context().push()
     app.logger.info("App setup complete")
@@ -37,7 +37,7 @@ def create_app():
     # cache.clear()
     # app.app_context().push() 
 
-    return app,api, celery
+    return app,api,celery
 
 app,api,celery = create_app()
     

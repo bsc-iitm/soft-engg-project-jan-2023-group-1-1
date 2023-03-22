@@ -39,6 +39,6 @@ class LocalDevelopmentConfig(Config):
     except: 
         MAILGUN_API_KEY = 'ABCD'
 
-class UnansweredNotificationSentConfig(LocalDevelopmentConfig):
+class CeleryTesting(LocalDevelopmentConfig):
     SQLITE_DB_DIR = os.path.join(basedir, "../test/db_instances")
-    SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(SQLITE_DB_DIR, "unansweredticketnotification.sqlite3")
+    SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(SQLITE_DB_DIR, "testingdb.sqlite3")

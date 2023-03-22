@@ -14,7 +14,7 @@ class User(db.Model):
     user_id=db.Column(db.Integer,primary_key=True,autoincrement=True)
     user_name=db.Column(db.String(100),unique=True,nullable=False)
     #name=db.Column(db.String(100),nullable=False)
-    password=db.Column(db.String(100),unique=True,nullable=False)
+    password=db.Column(db.String(100),nullable=False)
     email_id=db.Column(db.String(100),unique=True,nullable=False)
     role_id=db.Column(db.Integer,nullable=False) #Role ID for students is 1, for Support Agents is 2, Admins is 3, Manager is 4.
     responses = db.relationship('Response', back_populates='responder', lazy='subquery')
