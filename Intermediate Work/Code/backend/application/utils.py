@@ -30,7 +30,7 @@ def str_to_int_roles(role):
     return res
 
 @celery.task
-def add_users_import(csv_file_path, eid, subject='Error in importing your data'):
+def add_users_import(csv_file_path, eid):
     """
     Adds users as a batch job wherein a CSV file is passed from the frontend and then operated upon by the backend.
     csv_file_path is the path to the csv file which has the CSV file of details. Please change it accordingly.
@@ -38,6 +38,7 @@ def add_users_import(csv_file_path, eid, subject='Error in importing your data')
     df = None
     b = None
     html = '<html>'
+    subject='Error in importing your data'
     try:
         df = pandas.read_csv(csv_file_path)
     except:
