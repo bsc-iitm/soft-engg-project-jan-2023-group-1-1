@@ -35,6 +35,8 @@ def token_login_admin():
     response=requests.post(url,data=data)
     return response.json()["token"]
 
+#TICKET ALL GET Request.
+
 def test_ticket_all_get():
     header = {"secret_authtoken":token_login_student()}
     request=requests.get(url_ticket_all,headers=header)
@@ -63,3 +65,38 @@ def test_ticket_all_unauthenticated_get():
     assert request.status_code==200
     assert response['status']=='unsuccessful, missing the authtoken'
 
+# TICKET ALL PATCH request
+
+def test_ticket_all_patch():
+    input_dict = { "number_of_upvotes": 146,"is_read": False, "ticket_id": 2}
+    data = json.dumps(input_dict)
+    header={"secret_authtoken":token_login_admin(), "Content-Type":"application/json"}
+    request=requests.patch(url_ticket_all,data=data, headers=header)
+    assert request.status_code==200
+    assert request.json()['message']=="success"
+    ticket = Ticket.query.filter_by(ticket_id=input_dict["ticket_id"]).first()
+    assert input_dict["number_of_upvotes"] == ticket.number_of_upvotes
+    assert input_dict["is_read"] == ticket.is_read
+
+def test_ticket_all_patch_ticket_not_found():
+    input_dict = { "number_of_upvotes": 10023,"is_read": False, "ticket_id": 1e4}
+    data = json.dumps(input_dict)
+    header={"secret_authtoken":token_login_admin(), "Content-Type":"application/json"}
+    request=requests.patch(url_ticket_all,data=data, headers=header)
+    assert request.status_code==404
+    assert request.json()['message']=="There is no such ticket by that ID"
+
+def test_ticket_all_patch_no_ticket_id():
+    input_dict = { "number_of_upvotes": 10023,"is_read": False}
+    data = json.dumps(input_dict)
+    header={"secret_authtoken":token_login_admin(), "Content-Type":"application/json"}
+    request=requests.patch(url_ticket_all,data=data, headers=header)
+    assert request.status_code==403
+    assert request.json()['message']=="Please mention the ticketId field in your form"
+
+
+def test_ticket_all_unauthenticated_patch():
+    request=requests.patch(url_ticket_all)
+    response=request.json()
+    assert request.status_code==200
+    assert response['status']=='unsuccessful, missing the authtoken'
