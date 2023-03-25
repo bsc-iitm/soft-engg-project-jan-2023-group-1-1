@@ -1,4 +1,4 @@
-## TicketAll, GetResolutionTimes, ResolutionTimes, FlaggPostAPI, ResponseAPI_by_ticket, getResponseAPI_by_ticket
+## TicketAll, GetResolutionTimes, FlaggPostAPI, ResponseAPI_by_ticket, getResponseAPI_by_ticket, ResponseAPI_by_user, 
 # GET: Check Status Code and Key-Value Pairs
 # POST/PATCH: Check Status Code, GET Request and Check Key-Value Pairs
 # DELETE: Delete Request, Get Status Code, GET Request and raise Error/not 200 status code
@@ -17,6 +17,7 @@ from application.models import Ticket, Response
 BASE="http://127.0.0.1:5000"
 url_ticket_all=BASE+"/api/ticketAll"
 url_getResolutionTimes=BASE+"/api/getResolutionTimes"
+url_flaggedPosts = BASE+"/api/flaggedPosts"
 
 def token_login_student():
     url=BASE+"/login"
@@ -238,5 +239,15 @@ def test_getResolutionTimes_post():
                     for keys in thing:
                         if thing[keys] is not None:
                             assert thing[keys] == item[keys]
+
+#FlaggedPost get request
+
+def test_get_flaggedPost_wrong_role():
+    header={"secret_authtoken":token_login_support_agent(), "Content-Type":"application/json"}
+    request=requests.get(url = url_flaggedPosts, headers=header)
+    response = request.json()
+    assert request.status_code == 404
+    assert response["message"] == "You are not authorized to access this feature."
+
 
 
