@@ -13,7 +13,7 @@ from datetime import datetime
 SCRIPT_DIRP = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(SCRIPT_DIRP))
 
-from application.models import Ticket, Response
+from application.models import Ticket, Response, Flagged_Post
 BASE="http://127.0.0.1:5000"
 url_ticket_all=BASE+"/api/ticketAll"
 url_getResolutionTimes=BASE+"/api/getResolutionTimes"
@@ -66,7 +66,7 @@ def test_ticket_all_get():
                 assert d['is_offensive']== q.is_offensive
                 assert d['is_FAQ']==q.is_FAQ
                 assert d['rating']==q.rating
-
+    assert len(tickets) == len(responses)
 def test_ticket_all_unauthenticated_get():
     request=requests.get(url_ticket_all)
     response=request.json()
@@ -248,6 +248,21 @@ def test_get_flaggedPost_wrong_role():
     response = request.json()
     assert request.status_code == 404
     assert response["message"] == "You are not authorized to access this feature."
+
+def test_get_flaggedPost():
+    header={"secret_authtoken":token_login_admin(), "Content-Type":"application/json"}
+    request=requests.get(url = url_flaggedPosts, headers=header)
+    response = request.json()
+    assert request.status_code == 200
+    flagged_posts = list(Flagged_Post.query.filter_by().all())
+    d = response["data"]
+    assert len(flagged_posts) == len(d)
+    for item in flagged_posts:
+        for thing in d:
+            if item.ticket_id == thing["ticket_id"]:
+                assert item.flagger_id == thing["flagger_id"]
+                assert item.creator_id == thing["creator_id"]
+    
 
 
 
