@@ -1,4 +1,4 @@
-## TicketAll, GetResolutionTimes, FlaggedPostAPI, ResponseAPI_by_ticket, getResponseAPI_by_ticket, ResponseAPI_by_user, 
+## TicketAll, GetResolutionTimes, FlaggedPostAPI, ResponseAPI_by_ticket, getResponseAPI_by_ticket, ResponseAPI_by_user, ResponseAPI_by_response_id
 # GET: Check Status Code and Key-Value Pairs
 # POST/PATCH: Check Status Code, GET Request and Check Key-Value Pairs
 # DELETE: Delete Request, Get Status Code, GET Request and raise Error/not 200 status code
@@ -18,6 +18,7 @@ BASE="http://127.0.0.1:5000"
 url_ticket_all=BASE+"/api/ticketAll"
 url_getResolutionTimes=BASE+"/api/getResolutionTimes"
 url_flaggedPosts = BASE+"/api/flaggedPosts"
+url_respResp = BASE+ "/api/respResp"
 
 def token_login_student():
     url=BASE+"/login"
@@ -357,4 +358,44 @@ def test_post_flaggedPost():
         if item["ticket_id"] == input_dict["ticket_id"]:
             assert item["creator_id"] == input_dict["creator_id"]
             assert item["flagger_id"] == input_dict["flagger_id"]
-            
+
+#post request for ResponseAPI_by_response_id
+
+def test_post_ResponseAPI_by_response_id_unauthenticated():
+    request=requests.post(url_respResp)
+    response=request.json()
+    assert request.status_code==200
+    assert response['status']=='unsuccessful, missing the authtoken'
+
+def test_post_ResponseAPI_by_response_id_missing_response_id():
+    header={"secret_authtoken":token_login_support_agent(), "Content-Type":"application/json"}
+    input_dict = { }
+    data = json.dumps(input_dict)
+    request=requests.post(url = url_respResp, headers=header, data = data)
+    response = request.json()
+    assert request.status_code == 403
+    assert response["message"] == "Please provide a response ID."
+    
+def test_post_ResponseAPI_by_response_id_wrong_response_id():
+    header={"secret_authtoken":token_login_support_agent(), "Content-Type":"application/json"}
+    input_dict = {"response_id": 1000 }
+    data = json.dumps(input_dict)
+    request=requests.post(url = url_respResp, headers=header, data = data)
+    response = request.json()
+    assert request.status_code == 200
+    assert response["status"] == "succcess"
+    assert response["data"] == []
+
+def test_post_ResponseAPI_by_response_id():
+    #Checks all values except timestamp
+    header={"secret_authtoken":token_login_support_agent(), "Content-Type":"application/json"}
+    input_dict = {"response_id": 4 }
+    data = json.dumps(input_dict)
+    request=requests.post(url = url_respResp, headers=header, data = data)
+    response = request.json()
+    assert request.status_code == 200
+    response_table = Response.query.filter_by(response_id = input_dict["response_id"]).first()
+    assert response["data"]["response_id"] == input_dict["response_id"]
+    assert response["data"]["ticket_id"] == response_table.ticket_id
+    assert response["data"]["response"] == response_table.response
+    assert response["data"]["responder_id"] == response_table.responder_id
