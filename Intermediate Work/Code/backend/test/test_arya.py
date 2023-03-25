@@ -19,6 +19,7 @@ url_ticket_all=BASE+"/api/ticketAll"
 url_getResolutionTimes=BASE+"/api/getResolutionTimes"
 url_flaggedPosts = BASE+"/api/flaggedPosts"
 url_respResp = BASE+ "/api/respResp"
+url_respUser = BASE+"/api/respUser"
 
 def token_login_student():
     url=BASE+"/login"
@@ -399,3 +400,48 @@ def test_post_ResponseAPI_by_response_id():
     assert response["data"]["ticket_id"] == response_table.ticket_id
     assert response["data"]["response"] == response_table.response
     assert response["data"]["responder_id"] == response_table.responder_id
+
+#post request for responseAPI by user
+
+def test_post_ResponseAPI_by_user_unauthenticated():
+    request=requests.post(url_respUser)
+    response=request.json()
+    assert request.status_code==200
+    assert response['status']=='unsuccessful, missing the authtoken'
+
+def test_post_ResponseAPI_by_user_wrong_role():
+    header={"secret_authtoken":token_login_admin(), "Content-Type":"application/json"}
+    input_dict = { "responder_id": 2}
+    data = json.dumps(input_dict)
+    request=requests.post(url = url_respUser, headers=header, data = data)
+    response = request.json()
+    assert request.status_code == 404
+    assert response["message"] == "Sorry, you don't have access to this feature!"
+
+def test_post_ResponseAPI_by_user_missing_responder_id():
+    header={"secret_authtoken":token_login_manager(), "Content-Type":"application/json"}
+    input_dict = { }
+    data = json.dumps(input_dict)
+    request=requests.post(url = url_respUser, headers=header, data = data)
+    response = request.json()
+    assert request.status_code == 403
+    assert response["message"] == "Please provide a responder ID for which you need the responses."
+
+def test_post_ResponseAPI_by_user():
+    #Checks everything apart from timestamp
+    header={"secret_authtoken":token_login_manager(), "Content-Type":"application/json"}
+    input_dict = { "responder_id": 2}
+    data = json.dumps(input_dict)
+    request=requests.post(url = url_respUser, headers=header, data = data)
+    response = request.json()
+    assert request.status_code == 200
+    data = response["data"]
+    responses = list(Response.query.filter_by(responder_id = input_dict["responder_id"]).all())
+    assert len(data) == len(responses)
+    for item in data:
+        for thing in responses:
+            if thing.response_id == item["response_id"]:
+                assert thing.ticket_id == item["ticket_id"]
+                assert thing.response == item["response"]
+                assert thing.responder_id == item["responder_id"]
+    
