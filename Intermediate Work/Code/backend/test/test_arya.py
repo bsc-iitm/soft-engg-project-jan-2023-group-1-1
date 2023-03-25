@@ -1,4 +1,4 @@
-## TicketAll, GetResolutionTimes, ResolutionTimes, FlaggPostAPI, ResponseAPI_by_ticket, getResponseAPI_by_ticket
+## TicketAll, GetResolutionTimes, FlaggedPostAPI, ResponseAPI_by_ticket, getResponseAPI_by_ticket, ResponseAPI_by_user, 
 # GET: Check Status Code and Key-Value Pairs
 # POST/PATCH: Check Status Code, GET Request and Check Key-Value Pairs
 # DELETE: Delete Request, Get Status Code, GET Request and raise Error/not 200 status code
@@ -13,10 +13,11 @@ from datetime import datetime
 SCRIPT_DIRP = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(SCRIPT_DIRP))
 
-from application.models import Ticket, Response
+from application.models import Ticket, Response, Flagged_Post
 BASE="http://127.0.0.1:5000"
 url_ticket_all=BASE+"/api/ticketAll"
 url_getResolutionTimes=BASE+"/api/getResolutionTimes"
+url_flaggedPosts = BASE+"/api/flaggedPosts"
 
 def token_login_student():
     url=BASE+"/login"
@@ -65,7 +66,7 @@ def test_ticket_all_get():
                 assert d['is_offensive']== q.is_offensive
                 assert d['is_FAQ']==q.is_FAQ
                 assert d['rating']==q.rating
-
+    assert len(tickets) == len(responses)
 def test_ticket_all_unauthenticated_get():
     request=requests.get(url_ticket_all)
     response=request.json()
@@ -239,4 +240,121 @@ def test_getResolutionTimes_post():
                         if thing[keys] is not None:
                             assert thing[keys] == item[keys]
 
+#FlaggedPost get request
 
+def test_get_flaggedPost_wrong_role():
+    header={"secret_authtoken":token_login_support_agent(), "Content-Type":"application/json"}
+    request=requests.get(url = url_flaggedPosts, headers=header)
+    response = request.json()
+    assert request.status_code == 404
+    assert response["message"] == "You are not authorized to access this feature."
+
+def test_get_flaggedPost():
+    header={"secret_authtoken":token_login_admin(), "Content-Type":"application/json"}
+    request=requests.get(url = url_flaggedPosts, headers=header)
+    response = request.json()
+    assert request.status_code == 200
+    flagged_posts = list(Flagged_Post.query.filter_by().all())
+    d = response["data"]
+    assert len(flagged_posts) == len(d)
+    for item in flagged_posts:
+        for thing in d:
+            if item.ticket_id == thing["ticket_id"]:
+                assert item.flagger_id == thing["flagger_id"]
+                assert item.creator_id == thing["creator_id"]
+
+def test_get_flaggedPost_unauthenticated():
+    request=requests.get(url_flaggedPosts)
+    response=request.json()
+    assert request.status_code==200
+    assert response['status']=='unsuccessful, missing the authtoken'
+
+#FlaggedPost post request
+
+def test_post_flaggedPost_wrong_role():
+    header={"secret_authtoken":token_login_admin(), "Content-Type":"application/json"}
+    input_dict = { "ticket_id": 1,"flagger_id": 2, "creator_id": 1}
+    data = json.dumps(input_dict)
+    request=requests.post(url = url_flaggedPosts, headers=header, data = data)
+    response = request.json()
+    assert request.status_code == 404
+    assert response["message"] == "You are not authorized to access this feature."
+
+def test_post_flaggedPost_unauthenticated():
+    request=requests.post(url_flaggedPosts)
+    response=request.json()
+    assert request.status_code==200
+    assert response['status']=='unsuccessful, missing the authtoken'
+
+def test_post_flaggedPost_missing_flagger_id():
+    header={"secret_authtoken":token_login_support_agent(), "Content-Type":"application/json"}
+    input_dict = { "ticket_id": 1, "creator_id": 1}
+    data = json.dumps(input_dict)
+    request=requests.post(url = url_flaggedPosts, headers=header, data = data)
+    response = request.json()
+    assert request.status_code == 403
+    assert response["message"] == "Please pass the flagger ID."
+
+def test_post_flaggedPost_missing_creator_id():
+    header={"secret_authtoken":token_login_support_agent(), "Content-Type":"application/json"}
+    input_dict = { "ticket_id": 1,"flagger_id": 2 }
+    data = json.dumps(input_dict)
+    request=requests.post(url = url_flaggedPosts, headers=header, data = data)
+    response = request.json()
+    assert request.status_code == 403
+    assert response["message"] == "Please pass the creator ID."
+
+def test_post_flaggedPost_missing_ticket_id():
+    header={"secret_authtoken":token_login_support_agent(), "Content-Type":"application/json"}
+    input_dict = { "creator_id": 1,"flagger_id": 2 }
+    data = json.dumps(input_dict)
+    request=requests.post(url = url_flaggedPosts, headers=header, data = data)
+    response = request.json()
+    assert request.status_code == 403
+    assert response["message"] == "Please pass the Ticket ID."
+
+def test_post_flaggedPost_wrong_flagger_id():
+    header={"secret_authtoken":token_login_support_agent(), "Content-Type":"application/json"}
+    input_dict = { "ticket_id": 1, "creator_id": 1,"flagger_id": 100 }
+    data = json.dumps(input_dict)
+    request=requests.post(url = url_flaggedPosts, headers=header, data = data)
+    response = request.json()
+    assert request.status_code == 403
+    assert response["message"] == "The person who flagged must be a support agent."
+
+
+def test_post_flaggedPost_wrong_creator_id():
+    header={"secret_authtoken":token_login_support_agent(), "Content-Type":"application/json"}
+    input_dict = { "ticket_id": 1, "creator_id": 100,"flagger_id": 2 }
+    data = json.dumps(input_dict)
+    request=requests.post(url = url_flaggedPosts, headers=header, data = data)
+    response = request.json()
+    assert request.status_code == 403
+    assert response["message"] == "The person who created the post must be a student."
+
+
+def test_post_flaggedPost_wrong_ticket_id():
+    header={"secret_authtoken":token_login_support_agent(), "Content-Type":"application/json"}
+    input_dict = { "ticket_id": 1000, "creator_id": 1,"flagger_id": 2 }
+    data = json.dumps(input_dict)
+    request=requests.post(url = url_flaggedPosts, headers=header, data = data)
+    response = request.json()
+    assert request.status_code == 403
+    assert response["message"] == "The referenced ticket is not created by the referenced person/ the ticket doesn't exist in the first place."
+
+def test_post_flaggedPost():
+    header={"secret_authtoken":token_login_support_agent(), "Content-Type":"application/json"}
+    input_dict = { "ticket_id": 1, "creator_id": 1,"flagger_id": 2 }
+    data = json.dumps(input_dict)
+    request=requests.post(url = url_flaggedPosts, headers=header, data = data)
+    response = request.json()
+    assert request.status_code == 200
+    assert response["status"] == "success"
+    header2 = {"secret_authtoken":token_login_admin(), "Content-Type":"application/json"}
+    request2 = requests.get(url = url_flaggedPosts, headers=header2)
+    response2 = request2.json()
+    for item in response2["data"]:
+        if item["ticket_id"] == input_dict["ticket_id"]:
+            assert item["creator_id"] == input_dict["creator_id"]
+            assert item["flagger_id"] == input_dict["flagger_id"]
+            

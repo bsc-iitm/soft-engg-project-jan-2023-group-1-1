@@ -759,7 +759,7 @@ class invalidCreatorException(Exception):
     pass
 
 class flaggedPostAPI(Resource):
-    #Only managers can view all the flagged posts.
+    #Only admins can view all the flagged posts.
     @token_required
     def get(user,self):
         if user.role_id == 3:
