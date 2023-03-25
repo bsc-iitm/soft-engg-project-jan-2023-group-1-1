@@ -155,41 +155,88 @@ def test_getResolutionTimes_post_wrong_ticket_id():
 def test_getResolutionTimes_post():
     #Only checks if days, seconds, microseconds and ticket IDs match
     header={"secret_authtoken":token_login_manager(), "Content-Type":"application/json"}
-    input_dict = {"ticket_id": 2}
+    input_dict = {"ticket_id": [1,2]} 
     data = json.dumps(input_dict)
     request=requests.post(url = url_getResolutionTimes,data = data, headers=header)
     response = request.json()
     assert request.status_code == 200
-    responses = Response.query.filter_by(ticket_id = input_dict["ticket_id"]).all()
-    responses = list(responses)
-    ticket = Ticket.query.filter_by(ticket_id = input_dict["ticket_id"]).first()
-    a = {}
-    response_times = []
-    for thing in responses:
-        if isinstance(thing.response_timestamp, datetime):
-            #print("Here 1")
-            response_times.append(thing.response_timestamp)
-        elif isinstance(thing.response_timestamp, str):
-            #print("Here 2")
-            response_times.append(datetime.strptime(thing.response_timestamp,'%Y-%m-%d %H:%M:%S.%f'))
-        response_time = max(response_times)
-        a["creation_time"] = None
-        if isinstance(ticket.creation_date, str):
-            a["creation_time"] = datetime.strptime(ticket.creation_date, '%Y-%m-%d %H:%M:%S.%f')
-        elif isinstance(ticket.creation_date, datetime):
-            a["creation_time"] = ticket.creation_date
-        a["response_time"] = response_time
-        a["resolution_time_datetime_format"] = a["response_time"] - a["creation_time"]
-        a["days"] = a["resolution_time_datetime_format"].days
-        a["seconds"] = a["resolution_time_datetime_format"].seconds
-        a["microseconds"] = a["resolution_time_datetime_format"].microseconds
-        a["resolution_time_datetime_format"] = str(a["resolution_time_datetime_format"])
-        a["creation_time"] = a["creation_time"]
-        a["ticket_id"] = input_dict["ticket_id"]
-        a["response_time"] = None
-        a["resolution_time_datetime_format"] = None
-        a["creation_time"] = None
-    d = response["data"]
-    for keys in a:
-        if a[keys] is not None:
-            assert a[keys] == d[keys]
+    if isinstance(input_dict["ticket_id"], int):
+        responses = Response.query.filter_by(ticket_id = input_dict["ticket_id"]).all()
+        responses = list(responses)
+        ticket = Ticket.query.filter_by(ticket_id = input_dict["ticket_id"]).first()
+        a = {}
+        response_times = []
+        for thing in responses:
+            if isinstance(thing.response_timestamp, datetime):
+                #print("Here 1")
+                response_times.append(thing.response_timestamp)
+            elif isinstance(thing.response_timestamp, str):
+                #print("Here 2")
+                response_times.append(datetime.strptime(thing.response_timestamp,'%Y-%m-%d %H:%M:%S.%f'))
+            response_time = max(response_times)
+            a["creation_time"] = None
+            if isinstance(ticket.creation_date, str):
+                a["creation_time"] = datetime.strptime(ticket.creation_date, '%Y-%m-%d %H:%M:%S.%f')
+            elif isinstance(ticket.creation_date, datetime):
+                a["creation_time"] = ticket.creation_date
+            a["response_time"] = response_time
+            a["resolution_time_datetime_format"] = a["response_time"] - a["creation_time"]
+            a["days"] = a["resolution_time_datetime_format"].days
+            a["seconds"] = a["resolution_time_datetime_format"].seconds
+            a["microseconds"] = a["resolution_time_datetime_format"].microseconds
+            a["resolution_time_datetime_format"] = str(a["resolution_time_datetime_format"])
+            a["creation_time"] = a["creation_time"]
+            a["ticket_id"] = input_dict["ticket_id"]
+            a["response_time"] = None
+            a["resolution_time_datetime_format"] = None
+            a["creation_time"] = None
+        d = response["data"]
+        for keys in a:
+            if a[keys] is not None:
+                assert a[keys] == d[keys]
+    elif isinstance(input_dict["ticket_id"], list):
+        data = []        
+        for item in input_dict["ticket_id"]:
+            d = {}
+            ticket = None
+            ticket = Ticket.query.filter_by(ticket_id = item).first()
+            if ticket is None:
+                continue
+            if isinstance(ticket.creation_date, str):
+                d["creation_time"] = datetime.strptime(ticket.creation_date, '%Y-%m-%d %H:%M:%S.%f')
+            elif isinstance(ticket.creation_date, datetime):
+                d["creation_time"] = ticket.creation_date
+            responses = Response.query.filter_by(ticket_id = item).all()
+            if ticket.is_open == False:
+                responses = list(responses)
+                response_times = []
+                for thing in responses:
+                    if isinstance(thing.response_timestamp, datetime):
+                        response_times.append(thing.response_timestamp)
+                    elif isinstance(thing.response_timestamp, str):
+                        #print("Here 2")
+                        response_times.append(datetime.strptime(thing.response_timestamp,'%Y-%m-%d %H:%M:%S.%f'))
+                    
+                response_time = max(response_times)
+                d["response_time"] = response_time
+                d["resolution_time_datetime_format"] = d["response_time"] - d["creation_time"]
+                d["days"] = d["resolution_time_datetime_format"].days
+                d["seconds"] = d["resolution_time_datetime_format"].seconds
+                d["microseconds"] = d["resolution_time_datetime_format"].microseconds
+                d["response_time"] = d["response_time"]
+                d["resolution_time_datetime_format"] = str(d["resolution_time_datetime_format"])
+                d["creation_time"] = d["creation_time"]
+                d["ticket_id"] = item
+                d["response_time"] = None
+                d["resolution_time_datetime_format"] = None
+                d["creation_time"] = None
+                data.append(d)
+        x = response["data"]
+        for item in x:
+            for thing in data:
+                if item["ticket_id"] == thing["ticket_id"]:
+                    for keys in thing:
+                        if thing[keys] is not None:
+                            assert thing[keys] == item[keys]
+
+
