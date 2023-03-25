@@ -57,3 +57,9 @@ def test_ticket_all_get():
                 assert d['is_FAQ']==q.is_FAQ
                 assert d['rating']==q.rating
 
+def test_ticket_all_unauthenticated_get():
+    request=requests.get(url_ticket_all)
+    response=request.json()
+    assert request.status_code==200
+    assert response['status']=='unsuccessful, missing the authtoken'
+
