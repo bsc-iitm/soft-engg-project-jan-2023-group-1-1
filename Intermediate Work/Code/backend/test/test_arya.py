@@ -20,6 +20,7 @@ url_getResolutionTimes=BASE+"/api/getResolutionTimes"
 url_flaggedPosts = BASE+"/api/flaggedPosts"
 url_respResp = BASE+ "/api/respResp"
 url_respUser = BASE+"/api/respUser"
+url_getRespTicket = BASE+"/api/getResponseAPI_by_ticket"
 
 def token_login_student():
     url=BASE+"/login"
@@ -445,3 +446,10 @@ def test_post_ResponseAPI_by_user():
                 assert thing.response == item["response"]
                 assert thing.responder_id == item["responder_id"]
     
+# post request for getResponseAPI_by_ticket
+
+def test_post_ResponseAPI_by_ticket_unauthenticated():
+    request=requests.post(url_getRespTicket)
+    response=request.json()
+    assert request.status_code==200
+    assert response['status']=='unsuccessful, missing the authtoken'
