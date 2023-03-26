@@ -21,6 +21,8 @@ url_flaggedPosts = BASE+"/api/flaggedPosts"
 url_respResp = BASE+ "/api/respResp"
 url_respUser = BASE+"/api/respUser"
 url_getRespTicket = BASE+"/api/getResponseAPI_by_ticket"
+url_RespTicket = BASE+"/api/respTicket"
+url_RespDelete = BASE+"/api/respRespDel/2/4"
 
 def token_login_student():
     url=BASE+"/login"
@@ -481,4 +483,91 @@ def test_post_getResponseAPI_by_ticket():
                 assert thing.response == item["response"]
                 assert thing.responder_id == item["responder_id"]
     assert response["status"] == "success"
+
+#patch request for ResponseAPI_by_ticket
+
+def test_patch_ResponseAPI_by_ticket_unauthorized():
+    request = requests.patch(url_RespTicket)
+    response=request.json()
+    assert request.status_code==200
+    assert response['status']=='unsuccessful, missing the authtoken'
+
+def test_patch_ResponseAPI_by_ticket_wrong_role():
+    header={"secret_authtoken":token_login_manager(), "Content-Type":"application/json"}
+    input_dict = { "response_id": 1}
+    data = json.dumps(input_dict)
+    request=requests.patch(url = url_RespTicket, headers=header, data = data)
+    response = request.json()
+    assert request.status_code == 404
+    assert response['message'] == "You are not authorized to update any responses."
     
+def test_patch_ResponseAPI_by_ticket_missing_response_id():
+    header={"secret_authtoken":token_login_student(), "Content-Type":"application/json"}
+    input_dict = { }
+    data = json.dumps(input_dict)
+    request=requests.patch(url = url_RespTicket, headers=header, data = data)
+    response = request.json()
+    assert request.status_code == 404
+    assert response['message'] == "Please provide the response id"
+
+def test_patch_ResponseAPI_by_ticket_missing_response():
+    header={"secret_authtoken":token_login_student(), "Content-Type":"application/json"}
+    input_dict = { "response_id": 1}
+    data = json.dumps(input_dict)
+    request=requests.patch(url = url_RespTicket, headers=header, data = data)
+    response = request.json()
+    assert request.status_code == 404
+    assert response['message'] == "Since your update response was blank, your earlier response hasn't been altered."
+
+def test_patch_ResponseAPI_by_ticket_wrong_response_id_or_response_not_by_account():
+    header={"secret_authtoken":token_login_student(), "Content-Type":"application/json"}
+    input_dict = { "response_id": 1, "response": "Hello, this was a response change!"}
+    data = json.dumps(input_dict)
+    request=requests.patch(url = url_RespTicket, headers=header, data = data)
+    response = request.json()
+    assert request.status_code == 404
+    assert response['message'] == "Either your response id is wrong, or this account is not the responder of the particular response."
+
+def test_patch_ResponseAPI_by_ticket():
+    #Verifies everything except timestamp
+    header={"secret_authtoken":token_login_support_agent(), "Content-Type":"application/json"}
+    input_dict = { "response_id": 1, "response": "Hello, this was a response change!"}
+    data = json.dumps(input_dict)
+    request=requests.patch(url = url_RespTicket, headers=header, data = data)
+    response = request.json()
+    assert request.status_code == 200
+    assert response['status'] == "success"
+    input_dict_2 = {"response_id": input_dict["response_id"]}
+    data2 = json.dumps(input_dict_2)
+    request2 = requests.post(url = url_respResp, data = data2, headers=header)
+    response_request2 = request2.json()
+    assert request2.status_code == 200
+    assert response_request2["status"] == "success"
+    assert response_request2["data"]["response_id"] == input_dict["response_id"]
+    assert response_request2["data"]["response"] == input_dict["response"]
+
+#delete request for ResponseAPI_by_responseID_delete
+
+def test_delete_ResponseAPI_by_response_id_delete():
+    header={"secret_authtoken":token_login_support_agent(), "Content-Type":"application/json"}
+    request=requests.delete(url = url_RespDelete, headers=header)
+    response = request.json()
+    assert request.status_code == 200
+    assert response['status'] == "success"
+    input_dict_2 = {"response_id": 4}
+    data2 = json.dumps(input_dict_2)
+    request2 = requests.post(url = url_respResp, data = data2, headers=header)
+    response_request2 = request2.json()
+    assert request2.status_code == 200
+    assert response_request2["status"] == "succcess"
+    assert len(response_request2["data"]) == 0
+    assert response_request2["data"] == []
+
+def test_delete_ResponseAPI_by_response_id_wrong_role():
+    header={"secret_authtoken":token_login_manager(), "Content-Type":"application/json"}
+    request=requests.delete(url = url_RespDelete, headers=header)
+    response = request.json()
+    assert response["message"] == "You are not authorized to delete responses."
+    assert request.status_code == 404
+
+

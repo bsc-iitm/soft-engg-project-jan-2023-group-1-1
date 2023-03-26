@@ -1,6 +1,6 @@
 from application import app, api, celery
 
-from application.api import TicketAPI , UserAPI, FAQApi, ResponseAPI_by_ticket, ResponseAPI_by_response_id, ResponseAPI_by_user,TicketAll, getResolutionTimes, flaggedPostAPI, getResponseAPI_by_ticket,Login,ImportResourceUser
+from application.api import TicketAPI , UserAPI, FAQApi, ResponseAPI_by_ticket, ResponseAPI_by_response_id, ResponseAPI_by_user,TicketAll, getResolutionTimes, flaggedPostAPI, getResponseAPI_by_ticket,Login,ImportResourceUser, ResponseAPI_by_responseID_delete
 from application.api import TicketDelete,UserDelete
 api.add_resource(TicketAPI, '/api/ticket')
 api.add_resource(UserAPI,'/api/user')
@@ -16,6 +16,7 @@ api.add_resource(Login,'/login')
 api.add_resource(ImportResourceUser,'/api/importUsers')
 api.add_resource(TicketDelete,'/api/ticket/<int:ticket_id>')
 api.add_resource(UserDelete,'/api/user/<int:user_id>')
+api.add_resource(ResponseAPI_by_responseID_delete, '/api/respRespDel/<int:responder_id>/<int:response_id>')
 from application.routes import *
 if __name__ == '__main__':
   # Run the Flask app

@@ -453,24 +453,18 @@ class ResponseAPI_by_ticket(Resource):
                 abort(404, message = "Either your response id is wrong, or this account is not the responder of the particular response.")
         else:
             abort(404, message = "You are not authorized to update any responses.")
-    
+
+class ResponseAPI_by_responseID_delete(Resource):
     @token_required
-    def delete(user, self):
+    def delete(user, self, responder_id, response_id):
         if user.role_id ==1 or user.role_id == 2 or user.role_id == 3:
-            args = request.get_json(force = True)
-            response_id = None
-            responder_id = None
-            try:
-                responder_id_2 = int(args["responder_id"]) 
-                if responder_id_2 and user.role_id == 3: #Admins can delete responses made by student/staff if they wish to.
-                    responder_id = responder_id_2
-            except:
-                responder_id = user.user_id
-            try:
-                response_id = args["response_id"]
-            except:
-                abort(403, message = "Please specify the response id!")
-            response_obj = Response.query.filter_by(response_id = response_id, responder_id = responder_id).first()
+            responder_id_local = None
+            responder_id_2 = responder_id
+            if responder_id_2 and user.role_id == 3: #Admins can delete responses made by student/staff if they wish to.
+                responder_id_local = responder_id_2
+            else:
+                responder_id_local = user.user_id
+            response_obj = Response.query.filter_by(response_id = response_id, responder_id = responder_id_local).first()
             if response_obj:
                 db.session.delete(response_obj)
                 db.session.commit()
