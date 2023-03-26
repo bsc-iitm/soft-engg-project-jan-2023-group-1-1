@@ -22,7 +22,7 @@ url_respResp = BASE+ "/api/respResp"
 url_respUser = BASE+"/api/respUser"
 url_getRespTicket = BASE+"/api/getResponseAPI_by_ticket"
 url_RespTicket = BASE+"/api/respTicket"
-url_RespDelete = BASE+"/api/respRespDel/2/4"
+url_RespDelete = BASE+"/api/respRespDel/2/8"
 
 def token_login_student():
     url=BASE+"/login"
@@ -393,7 +393,7 @@ def test_post_ResponseAPI_by_response_id_wrong_response_id():
 def test_post_ResponseAPI_by_response_id():
     #Checks all values except timestamp
     header={"secret_authtoken":token_login_support_agent(), "Content-Type":"application/json"}
-    input_dict = {"response_id": 4 }
+    input_dict = {"response_id": 1 }
     data = json.dumps(input_dict)
     request=requests.post(url = url_respResp, headers=header, data = data)
     response = request.json()
@@ -554,7 +554,7 @@ def test_delete_ResponseAPI_by_response_id_delete():
     response = request.json()
     assert request.status_code == 200
     assert response['status'] == "success"
-    input_dict_2 = {"response_id": 4}
+    input_dict_2 = {"response_id": 8}
     data2 = json.dumps(input_dict_2)
     request2 = requests.post(url = url_respResp, data = data2, headers=header)
     response_request2 = request2.json()
