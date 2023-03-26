@@ -8,3 +8,4 @@ myEnv/
 *.rdb
 *.db
 Intermediate Work/.DS_Store
+Intermediate Work/Code/backend/db_directory/testdb.sqlite3
