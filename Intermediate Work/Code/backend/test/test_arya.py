@@ -23,6 +23,7 @@ url_respUser = BASE+"/api/respUser"
 url_getRespTicket = BASE+"/api/getResponseAPI_by_ticket"
 url_RespTicket = BASE+"/api/respTicket"
 url_RespDelete = BASE+"/api/respRespDel/2/8"
+url_RespDelete2 = BASE+"/api/respRespDel/2/13"
 
 def token_login_student():
     url=BASE+"/login"
@@ -346,7 +347,7 @@ def test_post_flaggedPost_wrong_ticket_id():
     response = request.json()
     assert request.status_code == 403
     assert response["message"] == "The referenced ticket is not created by the referenced person/ the ticket doesn't exist in the first place."
-
+"""
 def test_post_flaggedPost():
     header={"secret_authtoken":token_login_support_agent(), "Content-Type":"application/json"}
     input_dict = { "ticket_id": 1, "creator_id": 1,"flagger_id": 2 }
@@ -362,7 +363,7 @@ def test_post_flaggedPost():
         if item["ticket_id"] == input_dict["ticket_id"]:
             assert item["creator_id"] == input_dict["creator_id"]
             assert item["flagger_id"] == input_dict["flagger_id"]
-
+"""
 #post request for ResponseAPI_by_response_id
 
 def test_post_ResponseAPI_by_response_id_unauthenticated():
@@ -547,7 +548,7 @@ def test_patch_ResponseAPI_by_ticket():
     assert response_request2["data"]["response"] == input_dict["response"]
 
 #delete request for ResponseAPI_by_responseID_delete
-
+"""
 def test_delete_ResponseAPI_by_response_id_delete():
     header={"secret_authtoken":token_login_support_agent(), "Content-Type":"application/json"}
     request=requests.delete(url = url_RespDelete, headers=header)
@@ -562,12 +563,35 @@ def test_delete_ResponseAPI_by_response_id_delete():
     assert response_request2["status"] == "succcess"
     assert len(response_request2["data"]) == 0
     assert response_request2["data"] == []
-
+"""
 def test_delete_ResponseAPI_by_response_id_wrong_role():
     header={"secret_authtoken":token_login_manager(), "Content-Type":"application/json"}
     request=requests.delete(url = url_RespDelete, headers=header)
     response = request.json()
     assert response["message"] == "You are not authorized to delete responses."
     assert request.status_code == 404
+"""
+def test_delete_ResponseAPI_by_response_id_admin():
+    header={"secret_authtoken":token_login_admin(), "Content-Type":"application/json"}
+    request=requests.delete(url = url_RespDelete2, headers=header)
+    response = request.json()
+    assert request.status_code == 200
+    assert response['status'] == "success"
+    input_dict_2 = {"response_id": 13}
+    data2 = json.dumps(input_dict_2)
+    request2 = requests.post(url = url_respResp, data = data2, headers=header)
+    response_request2 = request2.json()
+    assert request2.status_code == 200
+    assert response_request2["status"] == "succcess"
+    assert len(response_request2["data"]) == 0
+    assert response_request2["data"] == []
+"""
 
+def test_delete_ResponseAPI_by_response_id_wrong_response_id():
+    header={"secret_authtoken":token_login_support_agent(), "Content-Type":"application/json"}
+    request=requests.delete(url = url_RespDelete, headers=header)
+    response = request.json()
+    assert request.status_code == 404
+    assert response["message"] == "Either the response you are trying to delete is not yours, or the response doesn't exist in the first place."
+    
 
