@@ -448,8 +448,37 @@ def test_post_ResponseAPI_by_user():
     
 # post request for getResponseAPI_by_ticket
 
-def test_post_ResponseAPI_by_ticket_unauthenticated():
+def test_post_getResponseAPI_by_ticket_unauthenticated():
     request=requests.post(url_getRespTicket)
     response=request.json()
     assert request.status_code==200
     assert response['status']=='unsuccessful, missing the authtoken'
+
+def test_post_getResponseAPI_by_ticket_wrong_ticket_id():
+    header={"secret_authtoken":token_login_manager(), "Content-Type":"application/json"}
+    input_dict = { "ticket_id": 1000}
+    data = json.dumps(input_dict)
+    request=requests.post(url = url_getRespTicket, headers=header, data = data)
+    response = request.json()
+    assert request.status_code == 200
+    assert response["data"] == []
+    assert response["status"] == "success"
+
+def test_post_getResponseAPI_by_ticket():
+    #Checks everything except timestamps
+    header={"secret_authtoken":token_login_manager(), "Content-Type":"application/json"}
+    input_dict = { "ticket_id": 1}
+    data = json.dumps(input_dict)
+    request=requests.post(url = url_getRespTicket, headers=header, data = data)
+    response = request.json()
+    assert request.status_code == 200
+    data = response["data"]
+    responses = list(Response.query.filter_by(ticket_id = input_dict["ticket_id"]).all())
+    assert len(responses) == len(data)
+    for thing in responses:
+        for item in data:
+            if (thing.ticket_id == item["ticket_id"]) and (thing.response_id == item["response_id"]):
+                assert thing.response == item["response"]
+                assert thing.responder_id == item["responder_id"]
+    assert response["status"] == "success"
+    
