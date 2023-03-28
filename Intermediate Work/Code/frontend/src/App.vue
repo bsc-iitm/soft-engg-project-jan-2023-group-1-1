@@ -1,18 +1,19 @@
 <template>
   <div id="app">
     <NavBar />
-    <LoginComponent />
+    <!-- <LoginComponent /> -->
+      <router-view></router-view>
   </div>
 </template>
 
 <script>
 
-import LoginComponent from './components/LoginComponent.vue'
+// import LoginComponent from './components/LoginComponent.vue'
 import NavBar from './components/NavBar.vue'
 export default {
   name: 'App',
   components: {
-    LoginComponent,
+    // LoginComponent,
     NavBar
   }
 }
