@@ -8,18 +8,19 @@
       </div>
       <div class="form-group">
         <label>Password</label>
-        <input type="password" v-model="password" class="form-control" placeholder="Password" autocomplete="off" required>
+        <input type="password" v-model="password" class="form-control" placeholder="Password" autocomplete="off" required />
       </div>
       <button type="submit" class="btn btn-primary btn-lg">Submit</button>
 
       <p class="text" style="margin-top:10px">
-        You want to change password? <a href="#">Change Password</a>
+        You want to change password?<RouterLink to="/changePassword">Change Password</RouterLink>
       </p>
     </form>
   </div>
 </template>
 
 <script>
+import axios from "axios";
 export default {
   name: "LoginComponent",
   data() {
@@ -29,13 +30,23 @@ export default {
     };
   },
   methods: {
-    async loginUser(e) {
+    loginUser(e) {
       e.preventDefault();
       console.log(this.email, this.password);
-      this.$bvToast.toast("Login Successful", {
-        title: "Success",
-        variant: "success",
-        solid: true
+      axios.post("http://127.0.0.1:5000/login", {
+        email: this.email,
+        password: this.password
+      }).then(res => {
+        console.log(res);
+        if (res.status == 200) {
+          localStorage.setItem("token", res.data.token);
+          localStorage.setItem("user_id", res.data.user_id);
+          // this.$router.push("/dashboard");
+        } else {
+          alert(res.data.message);
+        }
+      }).catch(err => {
+        console.log(err);
       });
     },
   }
