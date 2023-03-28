@@ -41,7 +41,16 @@ export default {
         if (res.status == 200) {
           localStorage.setItem("token", res.data.token);
           localStorage.setItem("user_id", res.data.user_id);
-          // this.$router.push("/dashboard");
+          localStorage.setItem("role", res.data.role);
+          if(res.data.role == "1"){
+            this.$router.push("/dashboard");
+          }
+          else if(res.data.role == "3"){
+            this.$router.push("/dashboardAdmin");
+          }
+          else if(res.data.role == "2"){
+            this.$router.push("/dashboardSupportAgent");
+          }
         } else {
           alert(res.data.message);
         }

@@ -844,7 +844,7 @@ class Login(Resource):
             }, Config.SECRET_KEY, algorithm="HS256")
             # access_token = create_access_token(identity=email)
             # print(token)
-            return jsonify({"message":"Login Succeeded!", "token":token,"user_id":test.user_id})
+            return jsonify({"message":"Login Succeeded!", "token":token,"user_id":test.user_id,"role":test.role_id})
         else:
             abort(401, message="Bad Email or Password")
             
