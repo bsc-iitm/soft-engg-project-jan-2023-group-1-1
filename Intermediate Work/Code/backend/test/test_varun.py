@@ -85,6 +85,7 @@ def test_faq_authorized_get():
     response=request.json()
     responses=response['data']
     assert request.status_code==200
+    assert len(list(faqs)) == len(responses)
     for d in responses:
         for q in faqs:
             if q.ticket_id == d['ticket_id']:
