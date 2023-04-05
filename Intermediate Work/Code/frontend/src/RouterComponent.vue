@@ -5,6 +5,10 @@ import LoginComponent from './components/LoginComponent.vue';
 import DashboardStudentComponent from './components/DashboardStudentComponent.vue';
 import DashboardAdminComponent from './components/DashboardAdminComponent.vue';
 import DashboardSupportAgentComponent from './components/DashboardSupportAgentComponent.vue';
+import AddTicketComponent from './components/AddTicketComponent.vue';
+import EditTicketComponent from './components/EditTicketComponent.vue';
+import AllTicketComponent from './components/AllTicketComponent.vue';
+import FaqComponent from './components/FaqComponent.vue';
 const routes = [
     {
         path: "/",
@@ -25,6 +29,24 @@ const routes = [
     {
         path: "/dashboardSupportAgent",
         component: DashboardSupportAgentComponent,
+    },
+    {
+        path: "/addTicket",
+        component: AddTicketComponent,
+    },
+    {
+        name: "editTicket",
+        path: "/editTicket/:ticketId",
+        component: EditTicketComponent,
+        props: true
+    },
+    {
+        path: "/allTicket",
+        component: AllTicketComponent,
+    },
+    {
+        path: "/faq",
+        component: FaqComponent,
     },
 ];
 

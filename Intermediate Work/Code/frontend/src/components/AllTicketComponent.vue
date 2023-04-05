@@ -12,44 +12,25 @@
                             <button class="btn upvote" @click="increaseVote(t.ticket_id, t.number_of_upvotes)">^<br>{{
                                 t.number_of_upvotes }}</button>
                         </div>
-                        <div class="row">
-                            <div class="btn-group">
-                                <button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown">
-                                    Options
-                                </button>
-                                <ul class="dropdown-menu">
-                                    <li class="dropdown-item text-center" @click="deleteTicket(t.ticket_id)"> Delete </li>
-                                    <li class="dropdown-item text-center">
-                                        <RouterLink :to="{ name: 'editTicket', params: { ticketId: t.ticket_id } }">
-                                            Edit
-                                        </RouterLink>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
                     </div>
                 </div>
                 <hr />
             </div>
         </div>
-        <div class="text-center">
-            <button class="btn btn-lg btn-primary">
-                <RouterLink to="/addTicket">New Ticket</RouterLink>
-            </button>
-        </div>
     </div>
 </template>
 <script>
-import axios from "axios";
+import axios from 'axios';
+
 export default {
-    name: "DashboardStudentComponent",
+    name: "AllTicketComponent",
     data() {
         return {
             tickets: []
         };
     },
     async created() {
-        await axios.get("http://127.0.0.1:5000/api/ticket", {
+        await axios.get("http://127.0.0.1:5000/api/ticketAll", {
             headers: {
                 "secret_authtoken": localStorage.getItem("token")
             }
@@ -67,7 +48,7 @@ export default {
                 number_of_upvotes: upVotes + 1
             }
             data = JSON.stringify(data);
-            axios.patch("http://127.0.0.1:5000/api/ticket", data, {
+            axios.patch("http://127.0.0.1:5000/api/ticketAll", data, {
                 headers: {
                     "secret_authtoken": localStorage.getItem("token")
                 }
@@ -78,18 +59,6 @@ export default {
             });
             this.$router.go();
         },
-        deleteTicket(ticket_id) {
-            axios.delete("http://127.0.0.1:5000/api/ticket/" + ticket_id, {
-                headers: {
-                    "secret_authtoken": localStorage.getItem("token")
-                }
-            }).then((res) => {
-                console.log(res);
-            }).catch((err) => {
-                console.log(err);
-            });
-            this.$router.go();
-        }
     }
 }
 </script>
@@ -106,14 +75,12 @@ export default {
     font-weight: bold;
     font-size: 25px;
 }
-
-a {
-    color: rgb(255, 255, 255);
+a{
+  color: rgb(255, 255, 255);
     text-decoration: none;
 }
-
-.dropdown-menu a {
-    color: rgb(0, 0, 0);
+.dropdown-menu a{
+  color: rgb(0, 0, 0);
     text-decoration: none;
 }
 </style>
