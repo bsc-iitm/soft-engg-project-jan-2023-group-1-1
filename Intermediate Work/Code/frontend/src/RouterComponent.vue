@@ -9,6 +9,7 @@ import AddTicketComponent from './components/AddTicketComponent.vue';
 import EditTicketComponent from './components/EditTicketComponent.vue';
 import AllTicketComponent from './components/AllTicketComponent.vue';
 import FaqComponent from './components/FaqComponent.vue';
+import ResponseComponent from './components/ResponseComponent.vue';
 const routes = [
     {
         path: "/",
@@ -47,6 +48,12 @@ const routes = [
     {
         path: "/faq",
         component: FaqComponent,
+    },
+    {
+        path: "/response/:ticketId",
+        component: ResponseComponent,
+        name: "response",
+        props: true
     },
 ];
 

@@ -4,7 +4,11 @@
             <div v-for="t in tickets" :key="t.ticket_id">
                 <div class="row">
                     <div class="col-md-10">
-                        <p class="ticket-title">{{ t.title }}</p>
+                        <p class="ticket-title">
+                            <RouterLink :to="{ name: 'response', params: { ticketId: t.ticket_id } }">
+                                {{ t.title }}
+                            </RouterLink>
+                        </p>
                         <p>{{ t.description }}</p>
                     </div>
                     <div class="col-md-2">
@@ -107,12 +111,12 @@ export default {
     font-size: 25px;
 }
 
-a {
+.btn a {
     color: rgb(255, 255, 255);
     text-decoration: none;
 }
 
-.dropdown-menu a {
+a {
     color: rgb(0, 0, 0);
     text-decoration: none;
 }
