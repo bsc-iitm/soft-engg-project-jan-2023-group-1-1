@@ -41,9 +41,9 @@ export default {
             };
             data = JSON.stringify(data);
             console.log(data);
-            await axios.post("http://127.0.0.1:5000/api/ticket",data, {
+            await axios.post("/api/ticket",data, {
             headers: {
-                    "secret_authtoken": localStorage.getItem("token"),
+                    // "secret_authtoken": localStorage.getItem("token"),
                     "Content-Type": "application/json"
             }
             }).then((res) => {

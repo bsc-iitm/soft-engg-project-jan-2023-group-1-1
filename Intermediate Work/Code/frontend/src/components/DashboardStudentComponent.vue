@@ -53,11 +53,7 @@ export default {
         };
     },
     async created() {
-        await axios.get("http://127.0.0.1:5000/api/ticket", {
-            headers: {
-                "secret_authtoken": localStorage.getItem("token")
-            }
-        }).then((res) => {
+        await axios.get("/api/ticket").then((res) => {
             // console.log(res.data.data);
             for (var i = 0; i < res.data.data.length; i++) {
                 this.tickets.push(res.data.data[i]);
@@ -71,11 +67,7 @@ export default {
                 number_of_upvotes: upVotes + 1
             }
             data = JSON.stringify(data);
-            axios.patch("http://127.0.0.1:5000/api/ticket", data, {
-                headers: {
-                    "secret_authtoken": localStorage.getItem("token")
-                }
-            }).then((res) => {
+            axios.patch("/api/ticket", data).then((res) => {
                 console.log(res);
             }).catch((err) => {
                 console.log(err);
@@ -83,11 +75,7 @@ export default {
             this.$router.go();
         },
         deleteTicket(ticket_id) {
-            axios.delete("http://127.0.0.1:5000/api/ticket/" + ticket_id, {
-                headers: {
-                    "secret_authtoken": localStorage.getItem("token")
-                }
-            }).then((res) => {
+            axios.delete("/api/ticket/" + ticket_id).then((res) => {
                 console.log(res);
             }).catch((err) => {
                 console.log(err);

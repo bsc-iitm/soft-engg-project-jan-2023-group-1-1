@@ -10,7 +10,7 @@
         <label>Password</label>
         <input type="password" v-model="password" class="form-control" placeholder="Password" autocomplete="off" required />
       </div>
-      <button type="submit" class="btn btn-primary btn-lg">Submit</button>
+      <button type="submit" class="btn btn-primary btn">Submit</button>
 
       <p class="text" style="margin-top:10px">
         You want to change password?<RouterLink to="/changePassword">Change Password</RouterLink>
@@ -33,7 +33,7 @@ export default {
     loginUser(e) {
       e.preventDefault();
       console.log(this.email, this.password);
-      axios.post("http://127.0.0.1:5000/login", {
+      axios.post("/login", {
         email: this.email,
         password: this.password
       }).then(res => {
@@ -41,15 +41,18 @@ export default {
         if (res.status == 200) {
           localStorage.setItem("token", res.data.token);
           localStorage.setItem("user_id", res.data.user_id);
+          this.$store.dispatch("user_id", res.data.user_id);
           localStorage.setItem("role", res.data.role);
+          this.$store.dispatch("role", res.data.role);
+          axios.defaults.headers.common["secret_authtoken"] = res.data.token;
           if(res.data.role == "1"){
             this.$router.push("/dashboard");
           }
           else if(res.data.role == "3"){
-            this.$router.push("/dashboardAdmin");
+            this.$router.push("/dashboard");
           }
           else if(res.data.role == "2"){
-            this.$router.push("/dashboardSupportAgent");
+            this.$router.push("/dashboard");
           }
         } else {
           alert(res.data.message);

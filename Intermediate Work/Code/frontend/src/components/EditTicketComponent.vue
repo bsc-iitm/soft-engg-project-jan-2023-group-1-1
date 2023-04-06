@@ -31,11 +31,7 @@ export default {
     },
     async created() {
         console.log(this.t);
-        await axios.get("http://127.0.0.1:5000/api/ticket", {
-            headers: {
-                "secret_authtoken": localStorage.getItem("token")
-            }
-        }).then((res) => {
+        await axios.get("/api/ticket").then((res) => {
             // console.log(res.data.data);
             for (var i = 0; i < res.data.data.length; i++) {
                 if (res.data.data[i].ticket_id == this.t) {
@@ -54,11 +50,7 @@ export default {
                 description: this.cc,
             };
             data = JSON.stringify(data);
-            await axios.patch("http://127.0.0.1:5000/api/ticket",data, {
-            headers: {
-                "secret_authtoken": localStorage.getItem("token")
-            }
-            }).then((res) => {
+            await axios.patch("/api/ticket",data).then((res) => {
                 console.log(res);
                 if (res.status == 200) {
                     alert("Ticket Edited Successfully");

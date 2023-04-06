@@ -1,4 +1,4 @@
-<script >
+<!-- <script >
 import { createWebHistory, createRouter } from 'vue-router';
 import ChangePasswordComponent from './components/ChangePasswordComponent.vue';
 import LoginComponent from './components/LoginComponent.vue';
@@ -63,4 +63,4 @@ const router = createRouter({
 });
 
 export default router;
-</script>
+</script> -->

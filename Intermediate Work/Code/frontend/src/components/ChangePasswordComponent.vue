@@ -37,7 +37,7 @@ export default {
         async loginUser(e) {
             e.preventDefault();
             console.log(this.email, this.password);
-            await axios.post("http://127.0.0.1:5000/login", {
+            await axios.post("/login", {
                 email: this.email,
                 password: this.oldPassword
             }).then(res => {
@@ -58,11 +58,7 @@ export default {
                 password: this.newPassword
             }
             data=JSON.stringify(data);
-            await axios.patch("http://127.0.0.1:5000/api/user", data, {
-                headers: {
-                    "secret_authtoken": token
-                }
-            }).then(res => {
+            await axios.patch("/api/user", data).then(res => {
                 console.log(res);
                 if (res.status == 200) {
                     alert("Password changed successfully");
