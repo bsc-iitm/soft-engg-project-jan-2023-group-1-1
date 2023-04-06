@@ -11,6 +11,7 @@ from datetime import datetime, timedelta
 import jwt
 from .config import Config
 from werkzeug.exceptions import HTTPException
+from application import index
 
 
 class TicketAPI(Resource):
@@ -51,6 +52,21 @@ class TicketAPI(Resource):
                           is_FAQ=data['is_FAQ'])
             db.session.add(ticket)
             db.session.commit()
+            tk_obj = {
+                'objectID': ticket.ticket_id,
+                'ticket_id': ticket.ticket_id,
+                'title': ticket.title,
+                'description': ticket.description,
+                'creation_date': ticket.creation_date,
+                'creator_id': ticket.creator_id,
+                'number_of_upvotes': ticket.number_of_upvotes,
+                'is_read': ticket.is_read,
+                'is_offensive': ticket.is_offensive,
+                'is_FAQ': ticket.is_FAQ,
+                'rating': ticket.rating,
+                'responses': []
+            }
+            index.save_object(obj=tk_obj)
             return jsonify({'message':'Ticket created successfully'})
         else:
             abort(403,message="You are not authorized to view this page")
@@ -125,6 +141,21 @@ class TicketAPI(Resource):
             except:
                 pass  
             db.session.commit()
+            tk_obj = {
+                'objectID': ticket.ticket_id,
+                'ticket_id': ticket.ticket_id,
+                'title': ticket.title,
+                'description': ticket.description,
+                'creation_date': ticket.creation_date,
+                'creator_id': ticket.creator_id,
+                'number_of_upvotes': ticket.number_of_upvotes,
+                'is_read': ticket.is_read,
+                'is_offensive': ticket.is_offensive,
+                'is_FAQ': ticket.is_FAQ,
+                'rating': ticket.rating,
+                'responses': []
+            }
+            index.partial_update_object(obj=tk_obj)
             return jsonify({"message": "Ticket updated successfully"})
         
         else:
@@ -142,6 +173,7 @@ class TicketDelete(Resource):
                     db.session.commit() 
             db.session.delete(current_ticket)
             db.session.commit()
+            index.delete_object(current_ticket.ticket_id)
             return jsonify({"message": "Ticket deleted successfully"})
         else:
             abort(400, message='No such ticket_id exists for the user')
@@ -413,6 +445,13 @@ class ResponseAPI_by_ticket(Resource):
                 response_obj = Response(ticket_id = ticket_id, response = response, responder_id = responder_id)
                 db.session.add(response_obj)
                 db.session.commit()
+                index.partial_update_object({
+                    'responses': {
+                        '_operation': 'Add',
+                        'value': response_obj.response
+                    },
+                    'objectID': ticket_obj.ticket_id
+                })
                 if user.role_id == 2 or (user.role_id==1 and user.user_id != ticket_obj.creator_id):
                     tk = {'title': ticket_obj.title, 'ticket_id': ticket_obj.ticket_id, 'creator_id': ticket_obj.creator_id, 'creator_email': ticket_obj.creator.email_id}
                     rp = {'responder_id': response_obj.responder_id, 'response': response_obj.response, 'response_id': response_obj.response_id, 'responder_uname': response_obj.responder.user_name}
@@ -446,8 +485,22 @@ class ResponseAPI_by_ticket(Resource):
                 abort(404, message = "Since your update response was blank, your earlier response hasn't been altered.")
             response_obj = Response.query.filter_by(responder_id = responder_id, response_id = response_id).first()
             if response_obj:
+                index.partial_update_object({
+                    'responses': {
+                        '_operation': 'Remove',
+                        'value': response_obj.response
+                    },
+                    'objectID': response_obj.ticket_id
+                })
                 response_obj.response = response
                 db.session.commit()
+                index.partial_update_object({
+                    'responses': {
+                        '_operation': 'Add',
+                        'value': response_obj.response
+                    },
+                    'objectID': response_obj.ticket_id
+                })
                 return jsonify({"status": "success"})
             else:
                 abort(404, message = "Either your response id is wrong, or this account is not the responder of the particular response.")
@@ -468,6 +521,13 @@ class ResponseAPI_by_responseID_delete(Resource):
             if response_obj:
                 db.session.delete(response_obj)
                 db.session.commit()
+                index.partial_update_object({
+                    'responses': {
+                        '_operation': 'Remove',
+                        'value': response_obj.response
+                    },
+                    'objectID': response_obj.ticket_id
+                })
                 return jsonify({"status": "success"})
             else:
                 abort(404, message = "Either the response you are trying to delete is not yours, or the response doesn't exist in the first place.")

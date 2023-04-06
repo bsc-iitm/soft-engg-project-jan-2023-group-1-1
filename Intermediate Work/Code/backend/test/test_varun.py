@@ -8,44 +8,44 @@ from application.tasks import celery
 from celery import chain
 
 
-# #Send Email test case when html, subject and email id is correct
-# def test_send_email_all_parameters_okay():
-#     html = '<html> <p> Hi! </p> </html>'
-#     eid = 'calyx.keadon@dollstore.org'
-#     subject = 'This is a subject'
-#     email = (html,eid,subject)
-#     assert send_email.s(email).apply_async().get() == 200
+#Send Email test case when html, subject and email id is correct
+def test_send_email_all_parameters_okay():
+    html = '<html> <p> Hi! </p> </html>'
+    eid = 'calyx.keadon@dollstore.org'
+    subject = 'This is a subject'
+    email = (html,eid,subject)
+    assert send_email.s(email).apply_async().get() == 200
 
-# # Email variable should be a tuple of the form (html, email_address, subject)
-# def test_send_email_improper_tuple_supplied():
-#     html = '<html> <p> Hi! </p> </html>'
-#     subject = 'This is a subject'
-#     email = (html, subject)
-#     with pytest.raises(ValueError):
-#         send_email.s(email).apply_async().get()
+# Email variable should be a tuple of the form (html, email_address, subject)
+def test_send_email_improper_tuple_supplied():
+    html = '<html> <p> Hi! </p> </html>'
+    subject = 'This is a subject'
+    email = (html, subject)
+    with pytest.raises(ValueError):
+        send_email.s(email).apply_async().get()
 
-# #Improper Email Address
-# def test_incorrect_email_address():
-#     html = '<html> <p> Hi! </p> </html>'
-#     subject = 'This is a subject'
-#     eid = 'abc'
-#     email = (html,eid,subject)
-#     assert send_email.s(email).apply_async().get() == 400
+#Improper Email Address
+def test_incorrect_email_address():
+    html = '<html> <p> Hi! </p> </html>'
+    subject = 'This is a subject'
+    eid = 'abc'
+    email = (html,eid,subject)
+    assert send_email.s(email).apply_async().get() == 400
 
-# #All Fields properly defined for Response Notification, whatever error you get will be from 
-# def test_response_notfication_all_okay():
-#     ticket_obj = {'title': 'Problems with my ID Card', 'ticket_id': 1, 'creator_id': 1, 'creator_email': 'redding.abba@dollstore.org'}
-#     response_obj = {'responder_id': 2, 'response': 'test response', 'response_id': 17, 'responder_uname': 'chirag'}
-#     send_notification = chain(response_notification.s(ticket_obj = ticket_obj, response_obj=response_obj), send_email.s()).apply_async()
-#     assert send_notification.get() == 200
+#All Fields properly defined for Response Notification, whatever error you get will be from 
+def test_response_notfication_all_okay():
+    ticket_obj = {'title': 'Problems with my ID Card', 'ticket_id': 1, 'creator_id': 1, 'creator_email': 'redding.abba@dollstore.org'}
+    response_obj = {'responder_id': 2, 'response': 'test response', 'response_id': 17, 'responder_uname': 'chirag'}
+    send_notification = chain(response_notification.s(ticket_obj = ticket_obj, response_obj=response_obj), send_email.s()).apply_async()
+    assert send_notification.get() == 200
 
-# #One Or more keys missing from expected input
-# def test_response_notification_inadequate_data_passed():
-#     ticket_obj = {'title': 'Problems with my ID Card', 'ticket_id': 1, 'creator_id': 1,}
-#     response_obj = {'responder_id': 2, 'response': 'test response', 'response_id': 17, 'responder_uname': 'chirag'}
-#     send_notification = chain(response_notification.s(ticket_obj = ticket_obj, response_obj=response_obj), send_email.s()).apply_async()
-#     with pytest.raises(KeyError):
-#         send_notification.get()
+#One Or more keys missing from expected input
+def test_response_notification_inadequate_data_passed():
+    ticket_obj = {'title': 'Problems with my ID Card', 'ticket_id': 1, 'creator_id': 1,}
+    response_obj = {'responder_id': 2, 'response': 'test response', 'response_id': 17, 'responder_uname': 'chirag'}
+    send_notification = chain(response_notification.s(ticket_obj = ticket_obj, response_obj=response_obj), send_email.s()).apply_async()
+    with pytest.raises(KeyError):
+        send_notification.get()
 
 import requests
 from flask import json
@@ -292,111 +292,111 @@ def test_faq_authorized_role_patch_valid_data():
     assert input_dict["is_approved"] == faq.is_approved
 
 
-# from application import create_app, db
-# from application.config import CeleryTesting
-# from application.tasks import unanswered_ticket_notification, poor_resolution_time
-# from application.models import User, Ticket, Response
+from application import create_app, db
+from application.config import CeleryTesting
+from application.tasks import unanswered_ticket_notification, poor_resolution_time
+from application.models import User, Ticket, Response
 
-# @pytest.fixture
-# def app():
-#     def _app(config_class):
-#         app, api, celery = create_app(config_class)
-#         if config_class is CeleryTesting:
-#             db.drop_all()
-#             # from application import models
-#             db.create_all()
-#             new_student = User(user_name='student', password='password', email_id='student@student.com', role_id=1)
-#             new_agent = User(user_name='agent', password='password2', email_id='agent@agent.com', role_id=2)
-#             new_manager = User(user_name='manager', password='password3', email_id='ascher.daymon@dollstore.org', role_id=4)
-#             new_student2 = User(user_name='student2', password='password4', email_id='student2@student.com', role_id=1)
-#             db.session.add(new_student)
-#             db.session.add(new_agent)
-#             db.session.add(new_manager)
-#             db.session.add(new_student2)
-#             db.session.commit()
-#         return app
+@pytest.fixture
+def app():
+    def _app(config_class):
+        app, api, celery = create_app(config_class)
+        if config_class is CeleryTesting:
+            db.drop_all()
+            # from application import models
+            db.create_all()
+            new_student = User(user_name='student', password='password', email_id='student@student.com', role_id=1)
+            new_agent = User(user_name='agent', password='password2', email_id='agent@agent.com', role_id=2)
+            new_manager = User(user_name='manager', password='password3', email_id='ascher.daymon@dollstore.org', role_id=4)
+            new_student2 = User(user_name='student2', password='password4', email_id='student2@student.com', role_id=1)
+            db.session.add(new_student)
+            db.session.add(new_agent)
+            db.session.add(new_manager)
+            db.session.add(new_student2)
+            db.session.commit()
+        return app
     
-#     yield _app
-#     db.session.remove()
-#     if str(db.engine.url) == CeleryTesting.SQLALCHEMY_DATABASE_URI:
-#         db.drop_all()
+    yield _app
+    db.session.remove()
+    if str(db.engine.url) == CeleryTesting.SQLALCHEMY_DATABASE_URI:
+        db.drop_all()
 
-# from datetime import datetime, timedelta
-# def test_unanswered_tickets_notification_email_sent_three_day_old_ticket_no_support_response(app):
-#     three_days_ago = datetime.now() - timedelta(hours=72)
-#     app = app(CeleryTesting)
-#     new_ticket = Ticket(title='test', description = 'test desc', creation_date = three_days_ago, creator_id=1, number_of_upvotes=0, is_read=False, is_open=True, is_offensive=False, is_FAQ=False)
-#     db.session.add(new_ticket)
-#     db.session.commit()
-#     assert unanswered_ticket_notification() == 'Notification Sent'
+from datetime import datetime, timedelta
+def test_unanswered_tickets_notification_email_sent_three_day_old_ticket_no_support_response(app):
+    three_days_ago = datetime.now() - timedelta(hours=72)
+    app = app(CeleryTesting)
+    new_ticket = Ticket(title='test', description = 'test desc', creation_date = three_days_ago, creator_id=1, number_of_upvotes=0, is_read=False, is_open=True, is_offensive=False, is_FAQ=False)
+    db.session.add(new_ticket)
+    db.session.commit()
+    assert unanswered_ticket_notification() == 'Notification Sent'
 
 
-# def test_unanswered_tickets_notification_email_not_sent_ticket_is_not_open(app):
-#     three_days_ago = datetime.now() - timedelta(hours=72)
-#     app = app(CeleryTesting)
-#     new_ticket = Ticket(title='test', description = 'test desc', creation_date = three_days_ago, creator_id=1, number_of_upvotes=0, is_read=False, is_open=False, is_offensive=False, is_FAQ=False)
-#     db.session.add(new_ticket)
-#     db.session.commit()
-#     assert unanswered_ticket_notification() == 'No Unresolved Tickets'
+def test_unanswered_tickets_notification_email_not_sent_ticket_is_not_open(app):
+    three_days_ago = datetime.now() - timedelta(hours=72)
+    app = app(CeleryTesting)
+    new_ticket = Ticket(title='test', description = 'test desc', creation_date = three_days_ago, creator_id=1, number_of_upvotes=0, is_read=False, is_open=False, is_offensive=False, is_FAQ=False)
+    db.session.add(new_ticket)
+    db.session.commit()
+    assert unanswered_ticket_notification() == 'No Unresolved Tickets'
 
-# def test_unanswered_tickets_notification_email_not_sent_as_ticket_open_but_response_from_agent(app):
-#     three_days_ago = datetime.now() - timedelta(hours=72)
-#     app = app(CeleryTesting)
-#     new_ticket = Ticket(title='test', description = 'test desc', creation_date = three_days_ago, creator_id=1, number_of_upvotes=0, is_read=False, is_open=True, is_offensive=False, is_FAQ=False)
-#     new_response = Response(ticket_id=1, response='test', responder_id=2, response_timestamp=datetime.now())
-#     db.session.add(new_ticket)
-#     db.session.add(new_response)
-#     db.session.commit()
-#     assert unanswered_ticket_notification() == 'All Tickets Answered'
+def test_unanswered_tickets_notification_email_not_sent_as_ticket_open_but_response_from_agent(app):
+    three_days_ago = datetime.now() - timedelta(hours=72)
+    app = app(CeleryTesting)
+    new_ticket = Ticket(title='test', description = 'test desc', creation_date = three_days_ago, creator_id=1, number_of_upvotes=0, is_read=False, is_open=True, is_offensive=False, is_FAQ=False)
+    new_response = Response(ticket_id=1, response='test', responder_id=2, response_timestamp=datetime.now())
+    db.session.add(new_ticket)
+    db.session.add(new_response)
+    db.session.commit()
+    assert unanswered_ticket_notification() == 'All Tickets Answered'
 
-# def test_unanswered_tickets_notification_email_sent_as_ticket_open_and_response_by_another_student_but_not_agent(app):
-#     three_days_ago = datetime.now() - timedelta(hours=72)
-#     app = app(CeleryTesting)
-#     new_ticket = Ticket(title='test', description = 'test desc', creation_date = three_days_ago, creator_id=1, number_of_upvotes=0, is_read=False, is_open=True, is_offensive=False, is_FAQ=False)
-#     new_response = Response(ticket_id=1, response='test', responder_id=4, response_timestamp=datetime.now())
-#     db.session.add(new_ticket)
-#     db.session.add(new_response)
-#     db.session.commit()
-#     assert unanswered_ticket_notification() == 'Notification Sent'
+def test_unanswered_tickets_notification_email_sent_as_ticket_open_and_response_by_another_student_but_not_agent(app):
+    three_days_ago = datetime.now() - timedelta(hours=72)
+    app = app(CeleryTesting)
+    new_ticket = Ticket(title='test', description = 'test desc', creation_date = three_days_ago, creator_id=1, number_of_upvotes=0, is_read=False, is_open=True, is_offensive=False, is_FAQ=False)
+    new_response = Response(ticket_id=1, response='test', responder_id=4, response_timestamp=datetime.now())
+    db.session.add(new_ticket)
+    db.session.add(new_response)
+    db.session.commit()
+    assert unanswered_ticket_notification() == 'Notification Sent'
 
-# def test_poor_resolution_time_email_sent_due_to_poor_performance(app):
-#     three_days_ago = datetime.now() - timedelta(hours=72)
-#     app = app(CeleryTesting)
-#     new_ticket = Ticket(title='test', description = 'test desc', creation_date = three_days_ago, creator_id=1, number_of_upvotes=0, is_read=False, is_open=False, is_offensive=False, is_FAQ=False)
-#     new_response = Response(ticket_id=1, response='test', responder_id=2, response_timestamp=datetime.now())
-#     db.session.add(new_ticket)
-#     db.session.add(new_response)
-#     db.session.commit()
-#     assert poor_resolution_time() == 'Email sent with details of agents with poor resolution time'
+def test_poor_resolution_time_email_sent_due_to_poor_performance(app):
+    three_days_ago = datetime.now() - timedelta(hours=72)
+    app = app(CeleryTesting)
+    new_ticket = Ticket(title='test', description = 'test desc', creation_date = three_days_ago, creator_id=1, number_of_upvotes=0, is_read=False, is_open=False, is_offensive=False, is_FAQ=False)
+    new_response = Response(ticket_id=1, response='test', responder_id=2, response_timestamp=datetime.now())
+    db.session.add(new_ticket)
+    db.session.add(new_response)
+    db.session.commit()
+    assert poor_resolution_time() == 'Email sent with details of agents with poor resolution time'
 
-# def test_poor_resolution_time_email_not_sent_due_to_good_performance(app):
-#     one_day_ago = datetime.now() - timedelta(hours=24)
-#     app = app(CeleryTesting)
-#     new_ticket = Ticket(title='test', description = 'test desc', creation_date = one_day_ago, creator_id=1, number_of_upvotes=0, is_read=False, is_open=False, is_offensive=False, is_FAQ=False)
-#     new_response = Response(ticket_id=1, response='test', responder_id=2, response_timestamp=datetime.now())
-#     db.session.add(new_ticket)
-#     db.session.add(new_response)
-#     db.session.commit()
-#     assert poor_resolution_time() == 'All Agents have have a resolution time less than 48 hours in the past 30 days'
+def test_poor_resolution_time_email_not_sent_due_to_good_performance(app):
+    one_day_ago = datetime.now() - timedelta(hours=24)
+    app = app(CeleryTesting)
+    new_ticket = Ticket(title='test', description = 'test desc', creation_date = one_day_ago, creator_id=1, number_of_upvotes=0, is_read=False, is_open=False, is_offensive=False, is_FAQ=False)
+    new_response = Response(ticket_id=1, response='test', responder_id=2, response_timestamp=datetime.now())
+    db.session.add(new_ticket)
+    db.session.add(new_response)
+    db.session.commit()
+    assert poor_resolution_time() == 'All Agents have have a resolution time less than 48 hours in the past 30 days'
 
-# def test_poor_resolution_time_email_not_sent_if_average_resolution_time_is_48(app):
-#     now = datetime.now()
-#     fourty_eight_hours_ago = now - timedelta(hours=48)
-#     app = app(CeleryTesting)
-#     new_ticket = Ticket(title='test', description = 'test desc', creation_date = fourty_eight_hours_ago, creator_id=1, number_of_upvotes=0, is_read=False, is_open=False, is_offensive=False, is_FAQ=False)
-#     new_response = Response(ticket_id=1, response='test', responder_id=2, response_timestamp=now)
-#     db.session.add(new_ticket)
-#     db.session.add(new_response)
-#     db.session.commit()
-#     assert poor_resolution_time() == 'All Agents have have a resolution time less than 48 hours in the past 30 days'
+def test_poor_resolution_time_email_not_sent_if_average_resolution_time_is_48(app):
+    now = datetime.now()
+    fourty_eight_hours_ago = now - timedelta(hours=48)
+    app = app(CeleryTesting)
+    new_ticket = Ticket(title='test', description = 'test desc', creation_date = fourty_eight_hours_ago, creator_id=1, number_of_upvotes=0, is_read=False, is_open=False, is_offensive=False, is_FAQ=False)
+    new_response = Response(ticket_id=1, response='test', responder_id=2, response_timestamp=now)
+    db.session.add(new_ticket)
+    db.session.add(new_response)
+    db.session.commit()
+    assert poor_resolution_time() == 'All Agents have have a resolution time less than 48 hours in the past 30 days'
 
-# def test_poor_resolution_time_email_not_sent_if_average_resolution_time_is_greater_than_48_but_thats_for_tickets_older_than_a_month(app):
-#     now = datetime.now()
-#     thirty_one_days_ago = now - timedelta(days=31)
-#     app = app(CeleryTesting)
-#     new_ticket = Ticket(title='test', description = 'test desc', creation_date = thirty_one_days_ago, creator_id=1, number_of_upvotes=0, is_read=False, is_open=False, is_offensive=False, is_FAQ=False)
-#     new_response = Response(ticket_id=1, response='test', responder_id=2, response_timestamp=now)
-#     db.session.add(new_ticket)
-#     db.session.add(new_response)
-#     db.session.commit()
-#     assert poor_resolution_time() == 'All Agents have have a resolution time less than 48 hours in the past 30 days'
+def test_poor_resolution_time_email_not_sent_if_average_resolution_time_is_greater_than_48_but_thats_for_tickets_older_than_a_month(app):
+    now = datetime.now()
+    thirty_one_days_ago = now - timedelta(days=31)
+    app = app(CeleryTesting)
+    new_ticket = Ticket(title='test', description = 'test desc', creation_date = thirty_one_days_ago, creator_id=1, number_of_upvotes=0, is_read=False, is_open=False, is_offensive=False, is_FAQ=False)
+    new_response = Response(ticket_id=1, response='test', responder_id=2, response_timestamp=now)
+    db.session.add(new_ticket)
+    db.session.add(new_response)
+    db.session.commit()
+    assert poor_resolution_time() == 'All Agents have have a resolution time less than 48 hours in the past 30 days'

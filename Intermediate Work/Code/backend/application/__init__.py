@@ -6,6 +6,7 @@ from application.models import db
 # from application.models import User, Role
 from application import workers
 # from flask_caching import Cache
+from algoliasearch.search_client import SearchClient
 
 app = None
 api = None
@@ -40,4 +41,6 @@ def create_app(conf=LocalDevelopmentConfig):
     return app,api,celery
 
 app,api,celery = create_app()
-    
+
+client = SearchClient.create("RRBO0FF8YF", LocalDevelopmentConfig.SEARCH_API_KEY)
+index = client.init_index('sociogrammers_app')

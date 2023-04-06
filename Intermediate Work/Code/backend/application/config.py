@@ -36,8 +36,11 @@ class LocalDevelopmentConfig(Config):
     CACHE_REDIS_PORT = 6379
     try:
         MAILGUN_API_KEY = os.environ['MG_API_KEY']
+        SEARCH_API_KEY = os.environ['SEARCH_API_KEY']
     except: 
         MAILGUN_API_KEY = 'ABCD'
+        SEARCH_API_KEY = 'ABCD'
+    
 
 class CeleryTesting(LocalDevelopmentConfig):
     SQLITE_DB_DIR = os.path.join(basedir, "../test/db_instances")
