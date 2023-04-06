@@ -16,16 +16,16 @@ for tk in tickets:
                 'is_offensive': tk.is_offensive,
                 'is_FAQ': tk.is_FAQ,
                 'rating': tk.rating,
-                'responses': []
+                'responses': [response.response for response in tk.responses]
                 }
-    responses = tk.responses 
-    for response in tk.responses:
-        tk_object['responses'].append(response.response)
-        # resp_obj = {
-        #     'response_id': response.response_id,
-        #     'response': response.response
-        # }
-        # tk_object['responses'].append(resp_obj)
+    # responses = tk.responses 
+    # for response in tk.responses:
+    #     tk_object['responses'].append(response.response)
+    #     # resp_obj = {
+    #     #     'response_id': response.response_id,
+    #     #     'response': response.response
+    #     # }
+    #     # tk_object['responses'].append(resp_obj)
     objects.append(tk_object)
 
 index.save_objects(objects=objects)
