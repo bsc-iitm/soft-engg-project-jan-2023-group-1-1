@@ -7,6 +7,8 @@ from application.models import db
 from application import workers
 # from flask_caching import Cache
 from algoliasearch.search_client import SearchClient
+from dotenv import load_dotenv
+
 
 app = None
 api = None
@@ -14,6 +16,7 @@ celery = None
 # cache = None
 
 def create_app(conf=LocalDevelopmentConfig):
+    load_dotenv()
     app = Flask(__name__)
     app.config.from_object(conf)
     db.init_app(app)

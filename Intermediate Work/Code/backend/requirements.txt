@@ -14,3 +14,4 @@ random-username
 pandas==1.5.3
 pytest==7.2.2
 algoliasearch==3.0.0
+python-dotenv==1.0.0

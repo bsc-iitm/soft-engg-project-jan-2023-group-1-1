@@ -1,5 +1,8 @@
 import os
 basedir = os.path.abspath(os.path.dirname(__file__))
+# from application.env_keys import mg_api_key, alg_api_key
+from dotenv import load_dotenv
+load_dotenv()
 
 class Config():
     DEBUG = False
@@ -35,8 +38,8 @@ class LocalDevelopmentConfig(Config):
     CACHE_REDIS_HOST = 'localhost'
     CACHE_REDIS_PORT = 6379
     try:
-        MAILGUN_API_KEY = os.environ['MG_API_KEY']
-        SEARCH_API_KEY = os.environ['SEARCH_API_KEY']
+        MAILGUN_API_KEY = os.environ.get('MG_API_KEY')
+        SEARCH_API_KEY = os.environ.get('SEARCH_API_KEY')
     except: 
         MAILGUN_API_KEY = 'ABCD'
         SEARCH_API_KEY = 'ABCD'

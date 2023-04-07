@@ -32,3 +32,5 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
+Intermediate Work/Code/backend/application/env_keys.py
+Intermediate Work/Code/backend/application/.env
