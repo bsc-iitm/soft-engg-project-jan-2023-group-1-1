@@ -17,7 +17,7 @@ export default {
     DashboardSupport: DashboardSupportAgentComponent,
   },
   computed: {
-    ...mapGetters("role"),
+    ...mapGetters(["role"]),
     appropriateComponent() {
     switch(this.$store.state.role){
         case 1:

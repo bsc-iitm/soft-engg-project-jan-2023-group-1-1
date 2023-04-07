@@ -61,21 +61,21 @@ export default {
         });
     },
     methods: {
-        increaseVote(ticket_id, upVotes) {
+        async increaseVote(ticket_id, upVotes) {
             var data = {
                 ticket_id: ticket_id,
                 number_of_upvotes: upVotes + 1
             }
             data = JSON.stringify(data);
-            axios.patch("/api/ticket", data).then((res) => {
+            await axios.patch("/api/ticket", data).then((res) => {
                 console.log(res);
             }).catch((err) => {
                 console.log(err);
             });
             this.$router.go();
         },
-        deleteTicket(ticket_id) {
-            axios.delete("/api/ticket/" + ticket_id).then((res) => {
+        async deleteTicket(ticket_id) {
+            await axios.delete("/api/ticket/" + ticket_id).then((res) => {
                 console.log(res);
             }).catch((err) => {
                 console.log(err);
