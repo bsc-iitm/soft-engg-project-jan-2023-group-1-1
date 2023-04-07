@@ -1,6 +1,8 @@
 <template>
     <div class="container">
-        <h1 class="text-center">Add Ticket</h1>
+        <div class="row">
+            <div class="col-sm">
+                <h1 class="text-center">Add Ticket</h1>
         <form @submit.prevent="addCard">
             <div class="form-group">
                 <label>Title</label>
@@ -14,6 +16,22 @@
             </div>
             <button type="submit" class="btn btn-primary btn-lg">Submit</button>
         </form>
+            </div>
+            <div class="vr"></div>
+            <div class="col-sm">
+                <div class="container">
+                    <p v-if="results"> Please look at the following similar tickets before posting a new query </p>
+                    <div class="search-result" v-for="(result, index) in results"  :key="index">
+                        <h3>
+                            <RouterLink :to="{ name: 'response', params: { ticketId: result.ticket_id } }">
+                                <div v-html="result._highlightResult.title.value"></div>
+                            </RouterLink>
+                        </h3>
+                        <div v-html="result._highlightResult.description.value"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
 </template>
@@ -26,7 +44,28 @@ export default {
         return {
             title: "",
             description: "",
+            results: null,
         };
+    },
+    watch: {
+        title: async function (val) {
+           let url = 'https://RRBO0FF8YF-dsn.algolia.net/1/indexes/sociogrammers_app/query'
+           // eslint-disable-next-line
+           let config = {
+                headers: {
+                    'X-Algolia-Application-Id': 'RRBO0FF8YF',
+                    'X-Algolia-API-Key': localStorage.getItem('alg-key'),
+                        }
+                    }
+            // eslint-disable-next-line
+            let data = {
+                'query': val
+            }
+            var instance = axios.create();
+            delete instance.defaults.headers.common['secret_authtoken'];
+            const response = await instance.post(url, data, config)
+            this.results = response.data.hits
+        }
     },
     methods: {
         async addCard() {
@@ -91,5 +130,14 @@ h1 {
 .form-group {
     margin-bottom: 1.5rem;
 }
+.topic-container {
+    margin: 33px 63px;
+}
+
+.ticket-title {
+    font-weight: bold;
+    font-size: 25px;
+}
+
 </style>
   
