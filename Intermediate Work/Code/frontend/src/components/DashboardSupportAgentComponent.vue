@@ -1,17 +1,130 @@
 <template>
-    <h1>hi agent</h1>
+    <div class="conatiner">
+        <div class="topic-container">
+            <div class="row">
+                <div class="col-md-10">
+                   <h3>Hi Agent</h3> 
+                </div>
+                <div class="col-md-2">
+                    <div class="btn-group">
+                        <button type="button" class="btn dropdown-toggle sortB" data-bs-toggle="dropdown">
+                            Sort
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li class="dropdown-item text-center" @click="sort_upvotes">Number of upvotes</li>
+                            <li class="dropdown-item text-center" @click="sort_time">Time of creation</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <br />
+            <div v-for="t in tickets" :key="t.ticket_id">
+                <div class="row">
+                    <div class="col-md-10">
+                        <p class="ticket-title">
+                            <RouterLink :to="{ name: 'response', params: { ticketId: t.ticket_id } }">
+                                {{ t.title }}
+                            </RouterLink>
+                        </p>
+                        <p>{{ t.description }}</p>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="row">
+                            <button class="btn upvote">^<br>{{
+                                t.number_of_upvotes }}</button>
+                        </div>
+                        <div class="row">
+                            <div class="btn-group">
+                                <button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown">
+                                    Options
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li class="dropdown-item text-center" @click="flagTicket(t.ticket_id)">Flag</li>
+                                    <li class="dropdown-item text-center">
+                                        Suggest as FAQ
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr />
+            </div>
+        </div>
+    </div>
 </template>
 <script>
+import axios from "axios";
 export default {
     name: "DashboardSupportAgentComponent",
     data() {
         return {
-            email: "",
-            password: ""
+            tickets: []
         };
     },
+    async created() {
+        await axios.get("/api/ticketAll").then((res) => {
+            // console.log(res.data.data);
+            for (var i = 0; i < res.data.data.length; i++) {
+                this.tickets.push(res.data.data[i]);
+            }
+        });
+    },
+    methods: {
+        async flagTicket(ticket_id) {
+            var data = {
+                ticket_id: ticket_id,
+                is_offensive: 1
+            }
+            data = JSON.stringify(data);
+            await axios.patch("/api/ticketAll", data).then((res) => {
+                console.log(res);
+            }).catch((err) => {
+                console.log(err);
+            });
+            this.$router.go();
+        },
+        sort_upvotes() {
+            this.tickets.sort((a, b) => {
+                return b.number_of_upvotes - a.number_of_upvotes;
+            });
+        },
+        sort_time() {
+            this.tickets.sort((a, b) => {
+                return new Date(b.created_at) - new Date(a.created_at);
+            });
+        }
+    }
 }
 </script>
 <style scoped>
+.topic-container {
+    margin: 33px 63px;
+}
 
+.upvote {
+    font-size: 20px;
+}
+
+.ticket-title {
+    font-weight: bold;
+    font-size: 25px;
+}
+
+.btn a {
+    color: rgb(255, 255, 255);
+    text-decoration: none;
+}
+
+a {
+    color: rgb(0, 0, 0);
+    text-decoration: none;
+}
+.sortB{
+    background-color: #000000;
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 20px;
+    border-radius: 10%;
+}
 </style>
