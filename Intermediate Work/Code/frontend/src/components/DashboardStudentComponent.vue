@@ -1,7 +1,7 @@
 <template>
     <div class="conatiner">
         <div class="topic-container">
-            <div v-for="t in tickets" :key="t.ticket_id">
+            <div  v-for="(t, index) in tickets"  :key="index">
                 <div class="row">
                     <div class="col-md-10">
                         <RouterLink :to="{ name: 'response', params: { ticketId: t.ticket_id } }">
@@ -11,16 +11,16 @@
                         </RouterLink>
                         <div class="btn-grp">
                             <div v-if="t.is_open == 0">
-                                <button class="btn btn-sm open">closed</button>
+                                <button class="btn btn-success btn-sm disabled">closed</button>
                             </div>
                             <div v-else>
-                                <button class="btn btn-sm closed">open</button>
+                                <button class="btn btn-sm btn-danger disabled">open</button>
                             </div>
                             <div v-if="t.is_read == 1">
-                                <button class="btn btn-sm closed">read</button>
+                                <button class="btn btn-sm btn-outline-success disabled">read</button>
                             </div>
                             <div v-else>
-                                <button class="btn btn-sm open">unread</button>
+                                <button class="btn btn-sm btn-outline-danger disabled">unread</button>
                             </div>
                         </div>
                         <p>{{ t.description }}</p>
@@ -44,6 +44,7 @@
                                     </li>
                                 </ul>
                             </div>
+                            <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#ratingModal" v-if="t.is_open==0" @click="this.selected_ticket=t.ticket_id">Rate Resolution</button>
                         </div>
                     </div>
                 </div>
@@ -56,6 +57,38 @@
             </button>
         </div>
     </div>
+    <!-- Modal -->
+<div class="modal fade" id="ratingModal" tabindex="-1" aria-labelledby="ratingModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="ratingModalLabel"> Please rate the resolution of this ticket</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+    <label for="myChoice1">Very Unhappy<br />
+        <input type="radio" v-model="rating" value="1" id="myChoice1"> 
+    </label>
+    <label for="myChoice2">Unhappy<br />
+        <input type="radio" v-model="rating" value="2" id="myChoice2"> 
+    </label>
+    <label for="myChoice3">Neutral<br />
+        <input type="radio" v-model="rating" value="3" id="myChoice3"> 
+    </label>
+    <label for="myChoice4">Happy<br />
+        <input type="radio" v-model="rating" value="4" id="myChoice4"> 
+    </label>
+    <label for="myChoice5">Very Happy<br />
+        <input type="radio" v-model="rating" value="5" id="myChoice5">
+    </label>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @click="submitRating()">Submit</button>
+      </div>
+    </div>
+  </div>
+</div>
 </template>
 <script>
 import axios from "axios";
@@ -63,7 +96,9 @@ export default {
     name: "DashboardStudentComponent",
     data() {
         return {
-            tickets: []
+            tickets: [],
+            rating: null,
+            selected_ticket: null,
         };
     },
     async created() {
@@ -75,6 +110,14 @@ export default {
         });
     },
     methods: {
+        async submitRating() {
+            var data = {
+                ticket_id: this.selected_ticket,
+                rating: this.rating
+            }
+            const response = await axios.patch('/api/ticket', data)
+            console.log(response)
+        },
         async increaseVote(ticket_id, upVotes) {
             var data = {
                 ticket_id: ticket_id,
@@ -122,7 +165,7 @@ a {
     color: rgb(0, 0, 0);
     text-decoration: none;
 }
-.closed {
+/* .closed {
     border: none;
     background: #2fe72f;
     border-radius: 10%;
@@ -138,10 +181,16 @@ a {
     color: white;
     margin-bottom: 5px;
     margin-right: 10px;
-}
+} */
 .btn-grp {
     display: flex;
     flex-direction: row;
     /* margin-right: 2px; */
+}
+
+label {
+  float: left;
+  padding: 0 1em;
+  text-align: center;
 }
 </style>
