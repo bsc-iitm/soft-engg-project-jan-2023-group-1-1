@@ -11,16 +11,13 @@
                         </RouterLink>
                         <div class="btn-grp">
                             <div v-if="t.is_open == 0">
-                                <button class="btn btn-success btn-sm disabled">closed</button>
+                                <button class="btn btn-success btn-sm disabled">Ticket Closed</button>
                             </div>
-                            <div v-else>
-                                <button class="btn btn-sm btn-danger disabled">open</button>
+                            <div v-else-if="t.is_open==1 && t.is_read==0">
+                                <button class="btn btn-sm btn-outline-danger disabled">Unread</button>
                             </div>
-                            <div v-if="t.is_read == 1">
-                                <button class="btn btn-sm btn-outline-success disabled">read</button>
-                            </div>
-                            <div v-else>
-                                <button class="btn btn-sm btn-outline-danger disabled">unread</button>
+                            <div v-if="t.is_open==1 && t.is_read == 1">
+                                <button class="btn btn-sm btn-outline-success disabled">Read</button>
                             </div>
                         </div>
                         <p>{{ t.description }}</p>
