@@ -1,27 +1,22 @@
 <template>
     <div class = "container">
         <div class= "topic-container">
-            <h3><RouterLink :to="{name: 'manageUsers'}">Manage Users</RouterLink></h3>
+            <h3>Hello This is manage FAQ</h3>
         </div>
         <br/>
-        <hr/>
-        <div class= "topic-container">
-            <h3><RouterLink :to="{name: 'manageFAQ'}">Manage FAQ</RouterLink></h3>
-        </div>
     </div>
 </template>
 <script>
 //import router from '@/router';
 
 export default {
-    name: "DashboardAdminComponent",
+    name: "ManageUsersComponent",
     data() {
         return {
             
         };
+    
     },
-    
-    
 }
 </script>
 <style scoped>
