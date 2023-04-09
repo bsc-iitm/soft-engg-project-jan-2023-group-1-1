@@ -6,7 +6,7 @@
         <br/>
         <hr/>
         <div class= "topic-container">
-            <h3><RouterLink :to="{name: 'manageFAQ'}">Manage FAQ</RouterLink></h3>
+            <h3><RouterLink :to="{name: 'manageFAQ'}">View New Suggestions for FAQ</RouterLink></h3>
         </div>
     </div>
 </template>

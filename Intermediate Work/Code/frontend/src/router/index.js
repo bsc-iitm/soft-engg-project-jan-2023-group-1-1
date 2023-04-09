@@ -11,7 +11,7 @@ import AllTicketComponent from '../components/AllTicketComponent.vue';
 import FaqComponent from '../components/FaqComponent.vue';
 import ResponseComponent from '../components/ResponseComponent.vue';
 import ManageUsersComponent from '../components/ManageUsersComponent.vue';
-import ManageFAQComponent from '../components/ManageFAQComponent.vue';
+import ManageFAQSuggestionsComponent from '../components/ManageFAQComponent.vue';
 // import store from "../store";
 const routes = [
     {
@@ -58,7 +58,7 @@ const routes = [
     },
     {
         path: "/manageFAQ",
-        component: ManageFAQComponent,
+        component: ManageFAQSuggestionsComponent,
         name: "manageFAQ"
     }
 ];

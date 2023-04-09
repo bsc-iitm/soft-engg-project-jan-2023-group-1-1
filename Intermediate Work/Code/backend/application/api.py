@@ -309,18 +309,22 @@ class FAQApi(Resource):
             except:
                 abort(400, message="ticket_id is required and should be integer")
             try:
-                cat = data['category']
-            except:
-                abort(400, message="category is required and should be string")
-            try:
                 is_app = data['is_approved']
             except:
                 abort(400, message="is_approved is required and should be boolean")
+            
+            if is_app: 
+                try:
+                    cat = data['category']
+                except:
+                    abort(400, message="category is required and should be string")
+            else:
+                cat = None
 
             if not db.session.query(Ticket).filter(Ticket.ticket_id==tid).first():
                 abort(400, message="ticket_id does not exist")
 
-            if db.session.query(Category).filter(Category.category==cat).first() is None:
+            if cat is not None and db.session.query(Category).filter(Category.category==cat).first() is None:
                 abort(400, message="category does not exist")
 
             if not isinstance(is_app, bool):
@@ -352,7 +356,7 @@ class FAQApi(Resource):
             current_ticket=db.session.query(FAQ).filter(FAQ.ticket_id==tid).first()
             if not current_ticket: 
                 abort(400, message="ticket_id is not in FAQ")
-
+            cat = None
             try:
                 cat = data['category']
                 if not db.session.query(Category).filter(Category.category==cat).first():
@@ -920,3 +924,20 @@ class ImportResourceUser(Resource):
             return jsonify({"message":"File uploaded successfully"})
         else:
             abort(401,message="You are not authorized to access this feature")
+
+class CategoryAPI(Resource):
+    @token_required
+    def get(user, self):
+        categories = [cat.category for cat in db.session.query(Category).all()]
+        return jsonify({'data': categories})
+    
+    @token_required
+    def post(user ,self):
+        if user.role_id==3:
+            category = request.json['category']
+            new_cat = Category(category=category)
+            db.session.add(new_cat)
+            db.session.commit()
+            return 200
+        else: 
+            return 403
