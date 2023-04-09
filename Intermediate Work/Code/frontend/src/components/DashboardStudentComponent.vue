@@ -4,11 +4,25 @@
             <div v-for="t in tickets" :key="t.ticket_id">
                 <div class="row">
                     <div class="col-md-10">
-                        <p class="ticket-title">
-                            <RouterLink :to="{ name: 'response', params: { ticketId: t.ticket_id } }">
+                        <RouterLink :to="{ name: 'response', params: { ticketId: t.ticket_id } }">
+                            <p class="ticket-title">
                                 {{ t.title }}
-                            </RouterLink>
-                        </p>
+                            </p>
+                        </RouterLink>
+                        <div class="btn-grp">
+                            <div v-if="t.is_open == 0">
+                                <button class="btn btn-sm open">closed</button>
+                            </div>
+                            <div v-else>
+                                <button class="btn btn-sm closed">open</button>
+                            </div>
+                            <div v-if="t.is_read == 1">
+                                <button class="btn btn-sm closed">read</button>
+                            </div>
+                            <div v-else>
+                                <button class="btn btn-sm open">unread</button>
+                            </div>
+                        </div>
                         <p>{{ t.description }}</p>
                     </div>
                     <div class="col-md-2">
@@ -107,5 +121,27 @@ export default {
 a {
     color: rgb(0, 0, 0);
     text-decoration: none;
+}
+.closed {
+    border: none;
+    background: #2fe72f;
+    border-radius: 10%;
+    color: white;
+    margin-bottom: 5px;
+    margin-right: 10px;
+}
+
+.open {
+    border: none;
+    background: #e7572f;
+    border-radius: 10%;
+    color: white;
+    margin-bottom: 5px;
+    margin-right: 10px;
+}
+.btn-grp {
+    display: flex;
+    flex-direction: row;
+    /* margin-right: 2px; */
 }
 </style>
