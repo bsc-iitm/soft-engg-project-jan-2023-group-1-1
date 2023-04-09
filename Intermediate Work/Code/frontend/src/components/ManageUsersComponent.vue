@@ -98,25 +98,27 @@ export default {
         },
         onUpload(){
             this.myFile = this.$refs.file.files[0];
+            
         },
         fileSubmission(){
             let formData = new FormData();
-            let c = this.myFile;
-            formData.append('file',c);
+            console.log(this.myFile);
+            formData.append('file',this.myFile);
+            
             let authtoken = localStorage.getItem("token");
-            fetch("/api/importUsers", {
+            fetch("http://localhost:5000/api/importUsers", {
             method: 'POST', 
             mode: 'cors', 
             cache: 'no-cache', 
             credentials: 'omit', 
             headers: {
-              'secret-authtoken' : authtoken
-              
+              'secret_authtoken' : authtoken,
+              //'Content-Type': "multipart/form-data",
             },
             redirect: 'follow', 
             referrerPolicy: 'no-referrer', 
             body: formData 
-          }).then ( () => {alert("User addition request has been received. You will get notified via email on the status.");location.reload()}).catch( e => console.log(e));
+          }).then ( () => {alert("User addition request has been received. You will get notified via email on the status.");/*location.reload()*/}).catch( e => console.log(e));
     },
     }
 }

@@ -912,11 +912,10 @@ from application.utils import add_users_import
 class ImportResourceUser(Resource):
     @token_required
     def post(user,self):
-        a = request.get_json(force = True)
-        print(a)
+        #print(request.files)
         file=request.files['file']
         file.save(file.filename)
-       """
+        """
         if(user.role_id==3):
             add_users_import.s(csv_file_path=file.filename, eid=user.email_id).apply_async()
             return jsonify({"message":"File uploaded successfully"})
