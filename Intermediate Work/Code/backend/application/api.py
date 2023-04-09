@@ -916,8 +916,10 @@ class ImportResourceUser(Resource):
         print(a)
         file=request.files['file']
         file.save(file.filename)
+       """
         if(user.role_id==3):
             add_users_import.s(csv_file_path=file.filename, eid=user.email_id).apply_async()
             return jsonify({"message":"File uploaded successfully"})
         else:
             abort(401,message="You are not authorized to access this feature")
+        """
