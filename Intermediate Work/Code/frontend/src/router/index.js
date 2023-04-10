@@ -13,6 +13,7 @@ import ResponseComponent from '../components/ResponseComponent.vue';
 import ManageUsersComponent from '../components/ManageUsersComponent.vue';
 import ManageFAQSuggestionsComponent from '../components/ManageFAQComponent.vue';
 import ManageFlaggedPosts from '../components/ManageFlaggedPosts.vue';
+import AddAdminsComponent from '../components/AddAdmins.vue';
 // import store from "../store";
 const routes = [
     {
@@ -66,6 +67,11 @@ const routes = [
         path: "/manageFlaggedPosts",
         component: ManageFlaggedPosts,
         name: "manageFlaggedPosts"
+    },
+    {
+        path: "/addAdmins",
+        component: AddAdminsComponent,
+        name: "AddAdmins"
     }
 ];
 const router = createRouter({
