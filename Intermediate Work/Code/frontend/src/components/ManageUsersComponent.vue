@@ -31,6 +31,7 @@
                 <!-- </div> -->
             <!-- </div> -->
         </form>
+        <hr/>
         <div class="topic-container">
             <h3>ADD MULTIPLE USERS BY CSV FILE</h3>
         </div>
@@ -39,6 +40,13 @@
         <div class="form-group"><input class="btn btn-lg" ref="file" id = file type="file" accept=".csv" v-on:change="onUpload($event)" /></div>
         
         <button class="btn btn-outline-success rounded" @click="fileSubmission">Submit</button>
+        <hr/>
+
+        <div class = "topic-container">
+            <h3>DELETE USER BY USERNAME</h3>
+        </div>
+        <div class = "form-group"><label>Enter the username you wish to delete</label><input type="text" class="form-control" v-model="username"  required /></div>
+        <button class="btn btn-lg" type="submit">Submit</button>
     </div>
 </template>
 <script>
