@@ -826,11 +826,14 @@ class flaggedPostAPI(Resource):
             if flagged_posts is not None:
                 flagged_posts = list(flagged_posts)
                 for item in flagged_posts:
-                    d = {}
-                    d["ticket_id"] = item.ticket_id
-                    d["flagger_id"] = item.flagger_id
-                    d["creator_id"] = item.creator_id
-                    l.append(d)
+                    if ((item.is_approved) and (not item.is_rejected))or ((not (item.is_approved)) and (not item.is_rejected)):
+                        d = {}
+                        d["ticket_id"] = item.ticket_id
+                        d["flagger_id"] = item.flagger_id
+                        d["creator_id"] = item.creator_id
+                        d["is_approved"] = item.is_approved
+                        d["is_rejected"] = item.is_rejected
+                        l.append(d)
                 return jsonify({"data": l, "status": "success"})
             else:
                 return jsonify({"data": l, "status" : "success"})
@@ -886,6 +889,32 @@ class flaggedPostAPI(Resource):
             db.session.add(flagged_post)
             db.session.commit()
             return jsonify({"status": "success"})
+        else:
+            abort(404, message = "You are not authorized to access this feature.")
+    
+    @token_required
+    def patch(user, self):
+        if user.role_id == 3:
+            args = request.get_json(force = True)
+            ticket_id = args["ticket_id"]
+            is_approved = None
+            is_rejected = None
+            try:
+                if args["is_approved"] is not None:
+                    is_approved = args["is_approved"]
+            except:
+                if args["is_rejected"] is not None:
+                    is_rejected = args["is_rejected"]
+            flagged_post = Flagged_Post.query.filter_by(ticket_id = ticket_id).first()
+            if is_approved is not None:
+                flagged_post.is_approved = is_approved
+                flagged_post.is_rejected = False
+            elif is_rejected is not None:
+                flagged_post.is_approved = False
+                flagged_post.is_rejected = is_rejected
+            db.session.commit()
+            return jsonify({"status": "success"})
+            
         else:
             abort(404, message = "You are not authorized to access this feature.")
             

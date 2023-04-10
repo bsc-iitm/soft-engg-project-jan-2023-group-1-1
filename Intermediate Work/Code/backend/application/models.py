@@ -73,6 +73,8 @@ class Flagged_Post(db.Model):
       ticket_id = db.Column(db.Integer, db.ForeignKey('ticket.ticket_id'), primary_key = True)
       flagger_id = db.Column(db.Integer, db.ForeignKey('user.user_id'))
       creator_id = db.Column(db.Integer, db.ForeignKey('user.user_id'))
+      is_approved = db.Column(db.Boolean, nullable = False, default = False)
+      is_rejected = db.Column(db.Boolean, nullable = False, default = False)
 
 def token_required(function):
 	@functools.wraps(function)
