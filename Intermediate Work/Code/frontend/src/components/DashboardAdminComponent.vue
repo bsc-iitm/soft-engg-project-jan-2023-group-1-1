@@ -8,6 +8,11 @@
         <div class= "topic-container">
             <h3><RouterLink :to="{name: 'manageFAQ'}">View New Suggestions for FAQ</RouterLink></h3>
         </div>
+        <br/>
+        <hr/>
+        <div class = "topic-container">
+            <h3><RouterLink :to= "{name: 'manageFlaggedPosts'}">View Flagged Posts</RouterLink></h3>
+        </div>
     </div>
 </template>
 <script>
