@@ -46,7 +46,7 @@
             <h3>DELETE USER BY USERNAME</h3>
         </div>
         <div class = "form-group"><label>Enter the username you wish to delete</label><input type="text" class="form-control" v-model="username"  required /></div>
-        <button class="btn btn-lg" type="submit">Submit</button>
+        <button class="btn btn-lg" type="submit" @click="onDelete">Delete</button>
     </div>
 </template>
 <script>
@@ -58,11 +58,32 @@ export default {
         return {
             emailID: "",
             roleID: "",
-            myFile: ''
+            myFile: '',
+            username: "",
+            usernames: [],
+            user_id: null,
         };
 
     },
     methods: {
+        async onDelete(x){
+            x.preventDefault();
+            await axios.get("/api/user").then((res) => {
+                    let data = res.data.data;
+                    this.usernames = data.map(({user_name}) => user_name)
+                    if (!this.usernames.includes(this.username)){
+                        alert("This username doesn't exist or is an admin/manager.");
+                        this.$router.go();
+                    }
+                    else{
+                        data.forEach(x => {if (x.user_name == this.username){this.user_id = x.user_id; console.log(this.user_id)}});
+                    }
+                    
+                }).catch((err) => {
+                    console.log(err);
+                });
+            await axios.delete(`/api/user/${this.user_id}`).then(() =>{alert("User deleted successfully");this.$router.go();}).catch((err) =>{console.log(err);})
+        },
         async addUser(x) {
             // console.log(this.response)
             x.preventDefault();
