@@ -11,13 +11,19 @@
                         </RouterLink>
                         <div class="btn-grp">
                             <div v-if="t.is_open == 0">
-                                <button class="btn btn-success btn-sm disabled">Ticket Closed</button>
+                                <span class="d-inline-block" tabindex="0" data-toggle="tooltip" title="Support agent has marked this ticket as closed. To reopen, simply reply with your query">
+                                <button class="btn btn-success btn-sm disabled">Ticket Closed <i class="bi bi-patch-question-fill"></i></button>
+                                </span>
                             </div>
                             <div v-else-if="t.is_open==1 && t.is_read==0">
-                                <button class="btn btn-sm btn-outline-danger disabled">Unread</button>
+                                <span class="d-inline-block" tabindex="0" data-toggle="tooltip" title="This ticket is still hasn't been read by a support agent. Please wait 48 hours before escalating.">
+                                <button class="btn btn-sm btn-outline-danger disabled">Unread <i class="bi bi-patch-question-fill"></i></button>
+                                </span>
                             </div>
                             <div v-if="t.is_open==1 && t.is_read == 1">
-                                <button class="btn btn-sm btn-outline-success disabled">Read</button>
+                                <span class="d-inline-block" tabindex="0" data-toggle="tooltip" title="A support agent has read your query. Please wait as they will respond shortly">
+                                <button class="btn btn-sm btn-outline-success disabled">Read <i class="bi bi-patch-question-fill"></i></button>
+                                </span>
                             </div>
                         </div>
                         <p>{{ t.description }}</p>
@@ -39,9 +45,12 @@
                                             Edit
                                         </RouterLink>
                                     </li>
+                                    <li class="dropdown-item text-center" data-bs-toggle="modal" data-bs-target="#ratingModal" v-if="t.is_open==0" @click="this.selected_ticket=t.ticket_id"> Rate Resolution
+
+                                    </li>
                                 </ul>
                             </div>
-                            <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#ratingModal" v-if="t.is_open==0" @click="this.selected_ticket=t.ticket_id">Rate Resolution</button>
+                            <!-- <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#ratingModal" v-if="t.is_open==0" @click="this.selected_ticket=t.ticket_id">Rate Resolution</button> -->
                         </div>
                     </div>
                 </div>
