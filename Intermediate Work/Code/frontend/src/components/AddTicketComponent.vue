@@ -11,10 +11,9 @@
             </div>
             <div class="form-group">
                 <label>Description</label>
-                <input type="text" v-model="description" class="form-control" placeholder="Enter description" autocomplete="off"
-                    required>
+                <textarea v-model="description" class="form-control" placeholder="Enter description" autocomplete="off" required rows='10'></textarea>
             </div>
-            <button type="submit" class="btn btn-primary btn-lg">Submit</button>
+            <button type="submit" class="btn btn-primary">Submit</button>
         </form>
             </div>
             <div class="vr"></div>
@@ -73,10 +72,10 @@ export default {
                 title: this.title,
                 description: this.description,
                 number_of_upvotes : 0,
-                is_read: 0,
-                is_open: 0,
-                is_offensive: 0,
-                is_FAQ: 0
+                is_read: false,
+                is_open: true,
+                is_offensive: false,
+                is_FAQ: false
             };
             data = JSON.stringify(data);
             console.log(data);

@@ -26,7 +26,7 @@
                                 {{ t.title }}
                             </p>
                         </RouterLink>
-                        <div class="btn-grp">
+                        <!-- <div class="btn-grp">
                             <div v-if="t.is_open == 0">
                                 <button class="btn btn-sm open">closed</button>
                             </div>
@@ -39,7 +39,7 @@
                             <div v-else>
                                 <button class="btn btn-sm open">unread</button>
                             </div>
-                        </div>
+                        </div> -->
                         <p>{{ t.description }}</p>
                     </div>
                     <div class="col-md-2">
@@ -117,9 +117,9 @@ export default {
         async suggestFAQ(ticket_id) {
             var data = {
                 ticket_id: ticket_id,
-                is_faq: 1
+                is_FAQ: true
             }
-            data = JSON.stringify(data);
+            // data = JSON.stringify(data);
             await axios.patch("/api/ticketAll", data).then((res) => {
                 console.log(res);
             }).catch((err) => {

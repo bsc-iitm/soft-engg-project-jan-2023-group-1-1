@@ -1,23 +1,27 @@
 <template>
-    <div class="conatiner">
+    <div class="container">
         <div class="topic-container">
             <div class="row">
                 <p class="ticket-title">{{ title }}</p>
                 <p>{{ description }}</p>
             </div>
+            <br />
             <hr />
             <h3>Responses :</h3>
+            <hr />
+            <br />
             <div v-for="r in responses" :key="r.response_id">
                 <p class="response">{{ r.response }}</p>
+                <br />
                 <hr />
             </div>
             <form v-on:submit.prevent="addResponse">
                 <div class="row">
                     <div class="col-md-10">
-                        <input type="text" class="form-control" v-model="response" placeholder="Enter Response" />
+                        <textarea class="form-control" v-model="response" placeholder="Enter Response" rows="10" required> </textarea>
                     </div>
                     <div class="col-md-2">
-                        <button class="btn" type="submit">Submit</button>
+                        <button class="btn btn-primary" type="submit">Submit</button>
                     </div>
                 </div>
             </form>

@@ -9,10 +9,10 @@
             </div>
             <div class="form-group">
                 <label>Description</label>
-                <input type="text" v-model="cc" class="form-control" autocomplete="off"
-                    required>
+                <textarea v-model="cc" class="form-control" autocomplete="off"
+                    required rows="10"> </textarea>
             </div>
-            <button type="submit" class="btn btn-primary btn-lg">Submit</button>
+            <button type="submit" class="btn btn-primary">Submit</button>
         </form>
     </div>
 

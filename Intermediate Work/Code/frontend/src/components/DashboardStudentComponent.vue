@@ -1,5 +1,5 @@
 <template>
-    <div class="conatiner">
+    <div class="container">
         <div class="topic-container">
             <div  v-for="(t, index) in tickets"  :key="index">
                 <div class="row">
@@ -26,6 +26,7 @@
                                 </span>
                             </div>
                         </div>
+                        <br/>
                         <p>{{ t.description }}</p>
                     </div>
                     <div class="col-md-2">
@@ -58,7 +59,7 @@
             </div>
         </div>
         <div class="text-center">
-            <button class="btn btn-lg btn-primary">
+            <button class="btn btn-primary">
                 <RouterLink to="/addTicket">New Ticket</RouterLink>
             </button>
         </div>

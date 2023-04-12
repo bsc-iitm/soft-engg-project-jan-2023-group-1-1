@@ -2,6 +2,9 @@
     <div class="container">
         <div class="topic-container">
             <h3>The following tickets have been suggested for FAQ </h3>
+            <br/>
+            <hr/>
+            <br/>
             <div class="container" v-for="(t, index) in relevant_tickets"  :key="index">
                 <div class="row">
                     <div class="col-md-10">
@@ -25,6 +28,8 @@
                     </div>
                 </div>
             </div>
+            <br/>
+        <hr/>
         </div>
         <br/>
         <!-- Modal -->

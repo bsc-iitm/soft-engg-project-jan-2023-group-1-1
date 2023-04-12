@@ -1,5 +1,5 @@
 <template>
-    <div class="conatiner">
+    <div class="container">
         <div class="topic-container">
             <div v-for="t in tickets" :key="t.ticket_id">
                 <div class="row">
