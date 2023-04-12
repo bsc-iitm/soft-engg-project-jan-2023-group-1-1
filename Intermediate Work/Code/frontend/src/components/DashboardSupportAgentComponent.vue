@@ -1,5 +1,5 @@
 <template>
-    <div class="conatiner">
+    <div class="container">
         <div class="topic-container">
             <div class="row">
                 <div class="col-md-10">
