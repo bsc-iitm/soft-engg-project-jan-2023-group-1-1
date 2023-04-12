@@ -1,25 +1,17 @@
 <template>
     <div class = "container">
         <div class= "topic-container">
-            <h3><RouterLink :to="{name: 'manageUsers'}">Manage Users</RouterLink></h3>
+            <h3><RouterLink :to="{name: 'AddAdmins'}">Add Admins</RouterLink></h3>
         </div>
         <br/>
         <hr/>
-        <div class= "topic-container">
-            <h3><RouterLink :to="{name: 'manageFAQ'}">View New Suggestions for FAQ</RouterLink></h3>
-        </div>
-        <br/>
-        <hr/>
-        <div class = "topic-container">
-            <h3><RouterLink :to= "{name: 'manageFlaggedPosts'}">View Flagged Posts</RouterLink></h3>
-        </div>
     </div>
 </template>
 <script>
 //import router from '@/router';
 
 export default {
-    name: "DashboardAdminComponent",
+    name: "DashboardManagerComponent",
     data() {
         return {
             

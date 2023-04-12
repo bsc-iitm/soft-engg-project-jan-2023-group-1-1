@@ -54,6 +54,9 @@ export default {
           else if(res.data.role == "2"){
             this.$router.push("/dashboard");
           }
+          else if(res.data.role == "4"){
+            this.$router.push("/dashboard");
+          }
         } else {
           alert(res.data.message);
         }

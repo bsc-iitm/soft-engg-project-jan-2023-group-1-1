@@ -8,6 +8,7 @@ import { mapGetters } from "vuex";
 import DashboardStudentComponent from './DashboardStudentComponent.vue';
 import DashboardAdminComponent from './DashboardAdminComponent.vue';
 import DashboardSupportAgentComponent from './DashboardSupportAgentComponent.vue';
+import DashboardManagerComponent from './DashboardManager.vue';
 
 export default {
   name: 'dash_board',
@@ -15,6 +16,7 @@ export default {
     DashboardStudent: DashboardStudentComponent,
     DashboardAdmin: DashboardAdminComponent,
     DashboardSupport: DashboardSupportAgentComponent,
+    DashboardManager: DashboardManagerComponent
   },
   computed: {
     ...mapGetters(["role"]),
@@ -26,6 +28,8 @@ export default {
             return "DashboardSupport"
         case 3: 
             return "DashboardAdmin"
+        case 4:
+            return "DashboardManager"
     }
     return null
     }
