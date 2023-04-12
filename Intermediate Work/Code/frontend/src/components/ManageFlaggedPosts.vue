@@ -5,7 +5,7 @@
             <br/>
             <hr/>
             <br/>
-            <div class="container" v-for="(t, index) in relevant_tickets"  :key="index">
+            <div class="container" v-for="(t, index) in pending_tickets"  :key="index">
                 <div class="row">
                     <div class="col-md-10">
                         <RouterLink :to="{ name: 'response', params: { ticketId: t.ticket_id } }">
@@ -14,7 +14,7 @@
                             </p>
                         </RouterLink>
                         <p>{{ t.description }}</p>
-                       
+                        <button class="btn btn-success" @click="approveFlag(t.ticket_id)"> Approve </button>
                     </div>
                     
                     <div class="col-md-2">
@@ -22,6 +22,32 @@
                             <button class="btn upvote disabled">^<br>{{t.number_of_upvotes }}</button>
                         </div>
                         <br/>
+                        <div class="row">
+                            <button class="btn btn-danger" @click="rejectFlag(t.ticket_id)"> Reject </button>
+
+                        </div>
+                    </div>
+                </div>
+                <br/>
+                <hr/>
+            </div>
+            <div class="container" v-for="(t, index) in approved_tickets"  :key="index">
+                <div class="row">
+                    <div class="col-md-10">
+                        <RouterLink :to="{ name: 'response', params: { ticketId: t.ticket_id } }">
+                            <p class="ticket-title">
+                                {{ t.title }}
+                            </p>
+                        </RouterLink>
+                        <p>{{ t.description }}</p>
+                    </div>
+                    
+                    <div class="col-md-2">
+                        <div class="row">
+                            <button class="btn upvote disabled">^<br>{{t.number_of_upvotes }}</button>
+                        </div>
+                        <br/>
+                       
                     </div>
                 </div>
                 <br/>
@@ -46,9 +72,22 @@ export default {
             selected: null,
             selected_ticket: null,
             flagged_ticket_ids: [],
-            relevant_tickets: []
+            pending_tickets: [],
+            approved_tickets: []
         };
     
+    },
+    methods:{
+        async approveFlag(thing){
+            var status = await axios.patch('/api/flaggedPosts',{ticket_id: thing, is_approved: true});
+            console.log(status);
+            this.$router.go();
+        },
+        async rejectFlag(thing){
+            var status = await axios.patch('/api/flaggedPosts',{ticket_id: thing, is_rejected: true});
+            console.log(status);
+            this.$router.go();
+        }
     },
     async created() {
         var res3 = await axios.get('/api/flaggedPosts');
@@ -59,8 +98,18 @@ export default {
             if (res2.data.data[i].is_offensive) {
                 // eslint-disable-next-line
                 if (this.flagged_ticket_ids.includes(res2.data.data[i].ticket_id)){
-                    this.relevant_tickets.push(res2.data.data[i]);
+                    for (var j = 0; j < this.data.length; j++){
+                    if (this.data[j].ticket_id == res2.data.data[i].ticket_id){
+                        if (this.data[j].is_approved && !this.data[j].is_rejected){
+                            this.approved_tickets.push(res2.data.data[i])
+                        } 
+                        else if (!this.data[j].is_approved && !this.data[j].is_rejected){
+                            this.pending_tickets.push(res2.data.data[i]);
+                        }
+                    }
                 }
+                }
+                
             }
         }
         console.log(res2);

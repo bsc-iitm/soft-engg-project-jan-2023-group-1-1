@@ -885,7 +885,7 @@ class flaggedPostAPI(Resource):
                     raise invalidTicketException
             except:
                 abort(403, message ="The referenced ticket is not created by the referenced person/ the ticket doesn't exist in the first place.")
-            flagged_post = Flagged_Post(creator_id = creator_id, ticket_id = ticket_id, flagger_id = flagger_id)
+            flagged_post = Flagged_Post(creator_id = creator_id, ticket_id = ticket_id, flagger_id = flagger_id, is_rejected = False, is_approved = False)
             db.session.add(flagged_post)
             db.session.commit()
             return jsonify({"status": "success"})
