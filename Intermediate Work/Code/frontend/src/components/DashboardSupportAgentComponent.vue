@@ -53,7 +53,7 @@
                                     Options
                                 </button>
                                 <ul class="dropdown-menu">
-                                    <li class="dropdown-item text-center" @click="flagTicket(t.ticket_id)">Flag</li>
+                                    <li class="dropdown-item text-center" @click="flagTicket(t.ticket_id, t.creator_id)">Flag</li>
                                     <li class="dropdown-item text-center" @click="suggestFAQ(t.ticket_id)">
                                         Suggest as FAQ
                                     </li>
@@ -89,7 +89,7 @@ export default {
         });
     },
     methods: {
-        async flagTicket(ticket_id) {
+        async flagTicket(ticket_id, creator_id) {
             var data = {
                 ticket_id: ticket_id,
                 is_offensive: 1
@@ -100,6 +100,8 @@ export default {
             }).catch((err) => {
                 console.log(err);
             });
+            let flagger_id = localStorage.getItem("user_id")
+            await axios.post("/api/flaggedPosts", {ticket_id: ticket_id, creator_id: creator_id, flagger_id: flagger_id});
             this.$router.go();
         },
         sort_upvotes() {
