@@ -111,7 +111,8 @@ export default {
         },
         sort_time() {
             this.tickets.sort((a, b) => {
-                return new Date(b.created_at) - new Date(a.created_at);
+                // console.log(new Date(b.creation_date) - new Date(a.creation_date));
+                return new Date(b.creation_date) - new Date(a.creation_date);
             });
         },
         async suggestFAQ(ticket_id) {
