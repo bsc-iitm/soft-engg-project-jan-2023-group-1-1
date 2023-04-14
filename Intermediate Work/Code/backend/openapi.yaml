@@ -1328,8 +1328,8 @@ paths:
           application/json:
             schema:
               required: 
-                - category
-                
+                - ticket_id
+                - response
               type: object
               properties:
                 ticket_id:
