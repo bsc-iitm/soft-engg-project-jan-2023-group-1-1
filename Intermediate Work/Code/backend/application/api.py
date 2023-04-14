@@ -153,7 +153,7 @@ class TicketAPI(Resource):
                 'is_offensive': ticket.is_offensive,
                 'is_FAQ': ticket.is_FAQ,
                 'rating': ticket.rating,
-                'responses': []
+                'responses': [resp.response for resp in ticket.responses]
             }
             index.partial_update_object(obj=tk_obj)
             return jsonify({"message": "Ticket updated successfully"})
@@ -265,13 +265,6 @@ class FAQApi(Resource):
     def get(user,self):
         faq = db.session.query(FAQ).all()
         result = []
-        # for q in faq:
-        #     d = {}
-        #     d['ticket_id'] = q.ticket_id
-        #     d['category'] = q.category
-        #     d['is_approved'] = q.is_approved
-        #     result.append(d)
-        # return jsonify(result)
         for q in faq:
             d = {}
             d['ticket_id'] = q.ticket_id
@@ -287,16 +280,6 @@ class FAQApi(Resource):
             d['is_offensive'] = q.ticket.is_offensive
             d['is_FAQ'] = q.ticket.is_FAQ
             d['rating'] = q.ticket.rating
-            # d['responses'] = []
-            # responses = q.ticket.responses
-            # if responses:
-            #     for response in responses:
-            #         d2 = {}
-            #         d2['response_id'] = response.response_id
-            #         d2['responder_id'] = response.responder_id
-            #         d2['response_timestamp'] = response.response_timestamp
-            #         d2['response'] = response.response
-            #         d['responses'].append(d2)
             result.append(d)
         return jsonify({"data": result})
 
@@ -963,10 +946,13 @@ class CategoryAPI(Resource):
     @token_required
     def post(user ,self):
         if user.role_id==3:
-            category = request.json['category']
+            try:
+                category = request.json['category']
+            except:
+                abort(400, message='category is required and should be string')
             new_cat = Category(category=category)
             db.session.add(new_cat)
             db.session.commit()
-            return 200
+            return jsonify({"status": "success"})
         else: 
-            return 403
+            abort(403,message="Unauthorized")

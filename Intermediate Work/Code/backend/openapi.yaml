@@ -31,6 +31,8 @@ tags:
     description: get responses by ticket ID
   - name: importUsersAPI
     description: Endpoint to batch import users
+  - name: CategoryAPI
+    description: Endpoint to manage categories
 paths:
   /api/getResponseAPI_by_ticket:
     post:
@@ -1204,7 +1206,80 @@ paths:
                     example: "success"
         '400':
           description: Error
-      
+          
+  /api/category:
+     get:
+      security: 
+        - secret_authtoken: []
+      tags:
+        - CategoryAPI
+      summary: "Retreive all categories for FAQ"
+      description: "Retreive all categories for FAQ"
+      operationId: getCategoryAPI
+      responses:
+        '200':
+          description: "Retreived all categories successfully"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: 
+                    type: array
+                    items: 
+                      type: string
+     post:
+      security:
+        - secret_authtoken: []
+      tags:
+        - CategoryAPI
+      summary: "Manage Categories"
+      description: "Manage Categories" 
+      operationId: postCategoryAPI
+      requestBody: 
+        content:
+          application/json:
+            schema:
+              required: 
+                - category
+                
+              type: object
+              properties:
+                category:
+                  type: string
+                  example: "Operational"
+      responses:
+        '200':
+          description: New Category Added Successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "category is required and should be string"
+        '403':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized"
+       
 
 components:
 
