@@ -33,6 +33,8 @@ tags:
     description: Endpoint to batch import users
   - name: CategoryAPI
     description: Endpoint to manage categories
+  - name: ResponseAPI_by_ticket
+    description: Endpoint to manage responses using ticket id
 paths:
   /api/getResponseAPI_by_ticket:
     post:
@@ -708,6 +710,51 @@ paths:
                   message:
                     type: string
                     example: "ticket_id does not exist"      
+  /api/respRespDel/{responder_id}/{response_id}:
+    parameters:
+        - name: responder_id
+          in: path
+          description: Responder ID
+          required: true
+          schema:
+            type: integer
+        - name: response_id
+          in: path
+          description: Response ID
+          required: true
+          schema:
+            type: integer
+    delete:
+      security: 
+        - secret_authtoken: []
+      tags:
+        - ResponseAPI_by_response_id
+      summary: "Delete a Response"
+      description: "Delete a Response"
+      operationId: deleteResponse
+      responses:
+        '200':
+          description: "Response deleted successfully"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: 
+                    type: string
+                    example: "success"
+
+        '404':
+          description: "Bad Request. Error in deleting Response. See message"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "You are not authorized to delete responses."  
+    
   /api/respResp:
     post:
       tags:
@@ -1267,7 +1314,61 @@ paths:
                     example: "success"
         '400':
           description: Error
-          
+  /api/respTicket:
+    post:
+      security: 
+        - secret_authtoken: []
+      tags:
+        - ResponseAPI_by_ticket
+      summary: Add a new response using ticket_id
+      description: "Add a new response using ticket_id"
+      operationId: postRespTicketAPI
+      requestBody: 
+        content:
+          application/json:
+            schema:
+              required: 
+                - category
+                
+              type: object
+              properties:
+                ticket_id:
+                  type: integer
+                  example: 1
+                response:
+                  type: string
+                  example: "Thanks for the quick resolution"
+      responses:
+        '200':
+          description: New Response Added Successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Please provide the ticket id!"
+        '404':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "You are not authorized to post responses to a ticket."
   /api/category:
      get:
       security: 
