@@ -1055,6 +1055,8 @@ paths:
       "ticket_id": 5,
       "flagger_id": 2,
       "creator_id": 1,
+      "is_approved": true,
+      "is_rejected": false
       
     }]
                   status: 
@@ -1072,7 +1074,66 @@ paths:
                     example: "You are not authorized to access this feature."
       security:
         - secret_authtoken: []
-        
+    patch:
+      tags:
+        - flaggedPostAPI
+      summary: Edit a ticket in the flagged posts database.
+      description: Edit a ticket in the flagged posts database.
+      operationId: patchflaggedPostAPI
+      requestBody:
+        content:
+          application/json:
+            schema:
+              required:
+                - ticket_id
+                - flagger_id
+                - creator_id
+              type: object
+              properties:
+                ticket_id:
+                  type: integer
+                  example: 5
+                flagger_id:
+                  type: integer
+                  example: 2
+                creator_id:
+                  type: integer
+                  example: 1
+                is_approved:
+                  type: boolean
+                  example: false
+                
+      responses:
+        '200':
+          description: the chosen ticket was added successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+        '403':
+          description: Client Side errors
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "The person who created the post must be a student."
+        '404':
+          description: Error
+          content:
+            application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      example: "You are not authorized to access this feature."   
     post:
       tags:
         - flaggedPostAPI
@@ -1410,6 +1471,8 @@ components:
         - ticket_id
         - flagger_id
         - creator_id
+        - is_approved
+        - is_rejected
       type: object
       properties:
         ticket_id:
@@ -1424,6 +1487,14 @@ components:
           type: integer
           description: User ID of the student who created this ticket
           example: 1
+        is_approved:
+          type: boolean
+          description: Ticket is marked as offensive by the admin
+          example: true
+        is_rejected: 
+          type: boolean
+          description: Ticket is marked as not offensive by the admin
+          example: true
       xml:
         name: Flagged_Post
     
