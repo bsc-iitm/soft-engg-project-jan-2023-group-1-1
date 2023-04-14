@@ -5,7 +5,8 @@
                 <h1 class="text-center">Add Ticket</h1>
         <form @submit.prevent="addCard">
             <div class="form-group">
-                <label>Title</label>
+                <label>Title </label>
+                <i class="bi bi-patch-question-fill" data-toggle="tooltip" data-placement="top" title="As you type the title, similar queries will appear on the right. Please read them before creating a new ticket."></i>
                 <input type="text" v-model="title" class="form-control" placeholder="Enter title" autocomplete="off"
                     required />
             </div>
