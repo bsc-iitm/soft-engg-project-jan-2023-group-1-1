@@ -53,7 +53,7 @@
                                     Options
                                 </button>
                                 <ul class="dropdown-menu">
-                                    <li class="dropdown-item text-center" @click="flagTicket(t.ticket_id, t.creator_id)">Flag</li>
+                                    <li class="dropdown-item text-center" data-bs-toggle="modal" data-bs-target="#confirmModal" @click="this.selected_ticket=t.ticket_id; this.selected_creator=t.creator_id">Flag</li>
                                     <li class="dropdown-item text-center" @click="suggestFAQ(t.ticket_id)">
                                         Suggest as FAQ
                                     </li>
@@ -68,6 +68,27 @@
                 <hr />
             </div>
         </div>
+         <!-- Modal -->
+         <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModal" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmModal">Are you sure you want to flag this post as offensive ?</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <!-- <div class="modal-body">
+
+                    </div> -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary btn-block" data-bs-dismiss="modal"
+                            @click="flagTicket(this.selected_ticket, this.selected_creator)">Yes</button>
+                    <button type="button" class="btn btn-secondary btn-block btn-outline-secondary" data-bs-dismiss="modal"> No </button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </template>
 <script>
@@ -76,7 +97,9 @@ export default {
     name: "DashboardSupportAgentComponent",
     data() {
         return {
-            tickets: []
+            tickets: [],
+            selected_ticket: null,
+            selected_creator: null
         };
     },
     async created() {
