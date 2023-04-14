@@ -1280,7 +1280,6 @@ paths:
                     type: string
                     example: "Unauthorized"
        
-
 components:
 
   schemas:
