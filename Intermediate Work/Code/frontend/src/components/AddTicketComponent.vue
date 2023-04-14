@@ -19,7 +19,7 @@
             </div>
             <div class="vr"></div>
             <div class="col-sm">
-                <div class="container">
+                <div class="container overflow-auto">
                     <p v-if="results"> Please look at the following similar tickets before posting a new query </p>
                     <div class="search-result" v-for="(result, index) in results"  :key="index">
                         <h3>
