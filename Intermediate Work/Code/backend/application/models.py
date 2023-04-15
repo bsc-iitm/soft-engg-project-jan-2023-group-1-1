@@ -20,22 +20,6 @@ class User(db.Model):
     responses = db.relationship('Response', back_populates='responder', lazy='subquery')
     tickets = db.relationship('Ticket',  back_populates='creator', lazy='subquery')
 
-class Student(db.Model):
-    user_id=db.Column(db.Integer, db.ForeignKey('user.user_id'),primary_key=True)
-    roll_number=db.Column(db.String(100),nullable=False,primary_key=True)
-    
-class Support_Agent(db.Model):
-    user_id=db.Column(db.Integer, db.ForeignKey('user.user_id'),primary_key=True)
-    agent_id=db.Column(db.String(100),nullable=False,primary_key=True)
-
-class Admin(db.Model):
-    user_id=db.Column(db.Integer, db.ForeignKey('user.user_id'),primary_key=True)
-    admin_id=db.Column(db.String(100),nullable=False,primary_key=True)
-    
-class Manager(db.Model):
-    user_id=db.Column(db.Integer, db.ForeignKey('user.user_id'),primary_key=True)
-    manager_id=db.Column(db.String(100),nullable=False,primary_key=True)
-
 class Response(db.Model):
     response_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     ticket_id = db.Column(db.Integer, db.ForeignKey('ticket.ticket_id'))
