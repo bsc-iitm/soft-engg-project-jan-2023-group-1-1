@@ -34,3 +34,4 @@ pnpm-debug.log*
 *.sw?
 Intermediate Work/Code/backend/application/env_keys.py
 Intermediate Work/Code/backend/application/.env
+Milestone-6-Final-Submission/Code/backend/application/.env
