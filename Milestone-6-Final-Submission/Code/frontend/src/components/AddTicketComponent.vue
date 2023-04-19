@@ -54,7 +54,7 @@ export default {
            let config = {
                 headers: {
                     'X-Algolia-Application-Id': 'RRBO0FF8YF',
-                    'X-Algolia-API-Key': localStorage.getItem('alg-key'),
+                    'X-Algolia-API-Key': 'c9cbb1a94125ef968dc0dc85f9d235f9',
                         }
                     }
             // eslint-disable-next-line
